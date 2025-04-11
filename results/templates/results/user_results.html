@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Your Test Results</h2>
+<table>
+    <tr>
+        <th>Quiz</th>
+        <th>Score (%)</th>
+        <th>Correct</th>
+        <th>Total</th>
+        <th>Date</th>
+    </tr>
+    {% for summary in summaries %}
+    <tr>
+        <td>{{ summary.quiz.title }}</td>
+        <td>{{ summary.score_percentage }}</td>
+        <td>{{ summary.correct_answers }}</td>
+        <td>{{ summary.total_questions }}</td>
+        <td>{{ summary.completed_at }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<a href="{% url 'download_results_excel' %}">📥 Download Excel</a>
+{% endblock %}

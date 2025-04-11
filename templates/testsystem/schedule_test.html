@@ -1,0 +1,11 @@
+<!-- templates/testsystem/schedule_test.html -->
+{% extends 'base.html' %}
+{% block title %}Schedule Test{% endblock %}
+{% block content %}
+<h2>Schedule a Test</h2>
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Schedule</button>
+</form>
+{% endblock %}

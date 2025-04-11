@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Registered Institutions</h2>
+  <ul>
+    {% for institution in institutions %}
+      <li>{{ institution.name }} ({{ institution.get_institution_type_display }})</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>{{ institution.name }} Dashboard</h2>
+  <p>Institution Type: {{ institution.get_institution_type_display }}</p>
+  <p>Welcome, {{ user.username }}!</p>
+{% endblock %}

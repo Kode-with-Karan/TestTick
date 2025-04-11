@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load analytics_extras %}
+{% block content %}
+<h2>Institution Analytics</h2>
+
+{% if stats %}
+    <h3>{{ stats.institution.name }}</h3>
+    <ul>
+        <li>Total Tests: {{ stats.total_tests }}</li>
+        <li>Total Students: {{ stats.total_students }}</li>
+        <li>Average Score: {{ stats.average_score }}%</li>
+    </ul>
+{% else %}
+    <p>No stats available.</p>
+{% endif %}
+
+<h3>Question Performance</h3>
+<canvas id="questionChart" width="800" height="400"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('questionChart').getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {{ questions|pluck:'question.text'|safe }},
+            datasets: [{
+                label: 'Success Rate (%)',
+                data: {{ questions|pluck:'success_rate'|safe }},
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                x: { ticks: { autoSkip: false, maxRotation: 90, minRotation: 45 } },
+                y: { beginAtZero: true, max: 100 }
+            }
+        }
+    });
+</script>
+{% endblock %}
+
+
+
+<!-- <h2>Institution Analytics</h2>
+
+{% if stats %}
+    <h3>{{ stats.institution.name }}</h3>
+    <ul>
+        <li>Total Tests: {{ stats.total_tests }}</li>
+        <li>Total Students: {{ stats.total_students }}</li>
+        <li>Average Score: {{ stats.average_score }}%</li>
+    </ul>
+{% else %}
+    <p>No stats available.</p>
+{% endif %}
+
+<h3>Question Performance</h3>
+<table>
+    <tr>
+        <th>Question</th>
+        <th>Attempted</th>
+        <th>Correct</th>
+        <th>Success Rate (%)</th>
+    </tr>
+    {% for q in questions %}
+    <tr>
+        <td>{{ q.question.text|truncatewords:10 }}</td>
+        <td>{{ q.times_attempted }}</td>
+        <td>{{ q.times_correct }}</td>
+        <td>{{ q.success_rate }}</td>
+    </tr>
+    {% endfor %}
+</table> -->

@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Scheduled Tests</h2>
+<ul>
+  {% for schedule in schedules %}
+    <li>{{ schedule.quiz.title }}: {{ schedule.start_time }} - {{ schedule.end_time }}</li>
+  {% endfor %}
+</ul>
+{% endblock %}

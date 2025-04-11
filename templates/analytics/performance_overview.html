@@ -1,0 +1,17 @@
+<!-- templates/analytics/performance_overview.html -->
+{% extends 'base.html' %}
+{% block title %}Performance Analytics{% endblock %}
+{% block content %}
+<h2>Question Performance Overview</h2>
+<table>
+    <tr><th>Question</th><th>Attempts</th><th>Correct</th><th>Success %</th></tr>
+    {% for q in performances %}
+    <tr>
+        <td>{{ q.question.text|truncatechars:50 }}</td>
+        <td>{{ q.times_attempted }}</td>
+        <td>{{ q.times_correct }}</td>
+        <td>{{ q.success_rate }}%</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

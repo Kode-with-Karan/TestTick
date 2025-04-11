@@ -1,0 +1,16 @@
+<!-- templates/results/result_summary.html -->
+{% extends 'base.html' %}
+{% block title %}Results Summary{% endblock %}
+{% block content %}
+<h2>Test Results</h2>
+<table>
+    <tr><th>Student</th><th>Score</th><th>Status</th></tr>
+    {% for result in results %}
+    <tr>
+        <td>{{ result.user.username }}</td>
+        <td>{{ result.score }}</td>
+        <td>{{ result.status }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
