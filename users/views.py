@@ -9,7 +9,7 @@ def register(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('dashboard')
+            return redirect('student_dashboard')
     else:
         form = CustomUserCreationForm()
     return render(request, 'users/register.html', {'form': form})

@@ -1,5 +1,5 @@
 """
-ASGI config for TickTest project.
+ASGI config for TestTick project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
