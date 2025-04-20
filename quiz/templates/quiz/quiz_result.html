@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container">
+
+<h2>Quiz Result: {{ quiz.title }}</h2>
+<p>Your Score: {{ student_quiz.score }} / {{ quiz.questions.count }}</p>
+
+<h3>Answers:</h3>
+<ul>
+  {% for answer in user_answers %}
+    <li>
+      <strong>{{ answer.question.text }}</strong><br>
+      Your answer: {{ answer.selected_option.text }} —
+      {% if answer.is_correct %}<span style="color: green;">Correct</span>{% else %}<span style="color: red;">Incorrect</span>{% endif %}
+    </li>
+  {% endfor %}
+</ul>
+</div>
+
+{% endblock %}

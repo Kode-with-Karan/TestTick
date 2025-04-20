@@ -30,15 +30,26 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic import TemplateView
 
 urlpatterns = [
+
     path('admin/', admin.site.urls),
+
+    path('', TemplateView.as_view(template_name="pages/home.html"), name='home'),
+    path('about/', TemplateView.as_view(template_name="pages/about.html"), name='about'),
+    path('contact/', TemplateView.as_view(template_name="pages/contact.html"), name='contact'),
+    path('event/', TemplateView.as_view(template_name="pages/event.html"), name='event'),
+    path('menu/', TemplateView.as_view(template_name="pages/menu.html"), name='menu'),
+    path('service/', TemplateView.as_view(template_name="pages/service.html"), name='service'),
 
     # App URLs
     path('users/', include('users.urls')),
     path('quiz/', include('quiz.urls')),
     path('results/', include('results.urls')),
     path('dashboard/', include('dashboard.urls')),
+
+
 
     # API URLs (if you're using DRF for APIs)
     # path('api/users/', include('users.api.urls')),       # example

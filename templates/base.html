@@ -1,25 +1,44 @@
-<!-- templates/base.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html class="wide wow-animation" lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <title>{% block title %}Quiz Platform{% endblock %}</title>
+    <title>{% block title %} {% endblock title %}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width height=device-height initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    {% block link %} {% endblock link %}
+    {% block js %} {% endblock js %}
+
+    {% include 'style.html' %}
+
+    {% block extrahead %}
+  
+    {% endblock extrahead %}
+
 </head>
+
 <body>
-    <header>
-        <h1>Quiz Platform</h1>
-        <nav>
-            <a href="/">Home</a>
-            <a href="/logout/">Logout</a>
-        </nav>
-    </header>
+    {% include 'loader.html' %}
 
-    <main>
-        {% block content %}{% endblock %}
-    </main>
+    <!-- Navbar -->
+    {% include 'navbar.html' %}
+    <!-- <div class="page"> -->
 
-    <footer>
-        <p>&copy; 2025 Quiz Platform</p>
-    </footer>
+      {% include 'search.html' %}
+
+  {% block content %}
+
+  {% endblock content %}
+
+<!-- Main Footer -->
+{% include 'footer.html' %}
+<!-- </div> -->
+<!-- Main JS -->
+{% include 'js.html' %}
+  {% block extrascript %}
+
+  {% endblock extrascript %}
 </body>
+
 </html>

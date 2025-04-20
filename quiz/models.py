@@ -12,6 +12,8 @@ class Quiz(models.Model):
     is_public = models.BooleanField(default=False)
     price = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
     shuffle_questions = models.BooleanField(default=False)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)  # 👈 Add this line
+
 
     def __str__(self):
         return self.title
@@ -46,3 +48,10 @@ class UploadedFile(models.Model):
     file = models.FileField(upload_to='quiz_uploads/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
     parsed = models.BooleanField(default=False)
+
+class UserAnswer(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    selected_option = models.ForeignKey(Option, on_delete=models.CASCADE)
+    is_correct = models.BooleanField()
+    answered_at = models.DateTimeField(auto_now_add=True)

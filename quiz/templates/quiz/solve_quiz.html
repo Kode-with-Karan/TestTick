@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container">
+  <h1 style="text-align: center; margin: 20px auto;">{{ quiz.title }}</h1>
+  <form method="post">
+    {% csrf_token %}
+    {% for question in questions %}
+    <div>
+      <h5><strong>{{ forloop.counter }}. {{ question.text }}</strong></h5>
+      {% for option in question.options.all %}
+      <label>
+        <input type="radio" name="{{ question.id }}" value="{{ option.id }}">
+        {{ option.text }}
+      </label><br>
+      {% endfor %}
+    </div>
+    <hr>
+    {% endfor %}
+    <button class=" btn btn-primary btn-md-rectangle d-none d-lg-inline-flex"
+                    data-bs-toggle="modal" data-bs-target="#searchModal"><a class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Submit</a></button>
+                
+  </form>
+
+</div>
+
+{% endblock %}
