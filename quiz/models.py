@@ -18,6 +18,28 @@ class Quiz(models.Model):
     def __str__(self):
         return self.title
 
+class Quiz_Question(models.Model):
+
+    CORRECT_OPTION = (
+        ('options_A', 'Options A'),
+        ('options_B', 'Options B'),
+        ('options_C', 'Options C'),
+        ('options_D', 'Options D'),
+    )
+
+    quiz = models.ForeignKey(Quiz, related_name='quiz_questions', on_delete=models.CASCADE)
+    question = models.TextField()
+    options_A = models.CharField(max_length=500)
+    options_B = models.CharField(max_length=500)
+    options_C = models.CharField(max_length=500)
+    options_D = models.CharField(max_length=500)
+    is_correct = models.CharField(max_length=20, choices=CORRECT_OPTION)
+
+
+    def __str__(self):
+        return self.question[:50]
+
+
 class Question(models.Model):
     quiz = models.ForeignKey(Quiz, related_name='questions', on_delete=models.CASCADE)
     text = models.TextField()
@@ -48,6 +70,36 @@ class UploadedFile(models.Model):
     file = models.FileField(upload_to='quiz_uploads/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
     parsed = models.BooleanField(default=False)
+
+
+class UsersAnswer(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    quiz = models.ForeignKey(Quiz, related_name='solved_questions', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.user} - {self.quiz}"
+    
+class Quiz_UserAnswer(models.Model):
+
+    CORRECT_OPTION = (
+        ('options_A', 'Options A'),
+        ('options_B', 'Options B'),
+        ('options_C', 'Options C'),
+        ('options_D', 'Options D'),
+    )
+
+    user_answer = models.ForeignKey(UsersAnswer, related_name='quiz_user_answer', on_delete=models.CASCADE)
+    question = models.TextField()
+    options_A = models.CharField(max_length=500)
+    options_B = models.CharField(max_length=500)
+    options_C = models.CharField(max_length=500)
+    options_D = models.CharField(max_length=500)
+    is_selected = models.CharField(max_length=20, choices=CORRECT_OPTION)
+    is_correct = models.CharField(max_length=20, choices=CORRECT_OPTION)
+
+
+    def __str__(self):
+        return self.question[:50]
 
 class UserAnswer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

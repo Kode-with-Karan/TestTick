@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container">
+    <h1>Create a New Quiz</h1>
+    
+    <form method="post" enctype="multipart/form-data">  <!-- IMPORTANT: enctype for file uploads -->
+        {% csrf_token %}
+        {{ form.as_p }}
+        
+        <label for="quiz_file"><strong>Or Upload Quiz File (.docx or .xlsx):</strong></label>
+        <input type="file" name="quiz_file" accept=".docx,.doc,.xlsx,.xls">
+
+        <hr>
+        <h3>Or Add Questions Manually</h3>
+        <div id="question-formset">
+            {{ formset.management_form }}
+            {% for form in formset %}
+                <div class="question-form" style="border: 1px solid #ccc; margin-bottom: 10px; padding: 10px;">
+                    {{ form.as_p }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <button type="button" id="add-question">Add More Questions</button>
+        <button type="submit">Create Quiz</button>
+    </form>
+</div>
+
+<script>
+    const addBtn = document.getElementById("add-question");
+    const formsetDiv = document.getElementById("question-formset");
+    const totalForms = document.querySelector("#id_form-TOTAL_FORMS");
+
+    addBtn.addEventListener("click", () => {
+        const currentFormCount = parseInt(totalForms.value);
+        const formCopyTarget = document.querySelector(".question-form");
+        const newForm = formCopyTarget.cloneNode(true);
+
+        newForm.innerHTML = newForm.innerHTML.replace(/form-(\d)-/g, `form-${currentFormCount}-`);
+        formsetDiv.appendChild(newForm);
+        totalForms.value = currentFormCount + 1;
+    });
+</script>
+
+
+<!--
+
+<div class="container">
+
+
+    <h1>Create a New Quiz</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+    
+        <h3>Questions</h3>
+        <div id="question-formset">
+            {{ formset.management_form }}
+            {% for form in formset %}
+                <div class="question-form" style="border: 1px solid #ccc; margin-bottom: 10px; padding: 10px;">
+                    {{ form.as_p }}
+                </div>
+            {% endfor %}
+        </div>
+    
+        <button type="button" id="add-question">Add More Questions</button>
+        <button type="submit">Create Quiz</button>
+    </form>
+    
+
+</div>
+
+<script>
+    const addBtn = document.getElementById("add-question");
+    const formsetDiv = document.getElementById("question-formset");
+    const totalForms = document.querySelector("#id_form-TOTAL_FORMS");
+
+    addBtn.addEventListener("click", () => {
+        console.log("Hello")
+        const currentFormCount = parseInt(totalForms.value);
+        const formCopyTarget = document.querySelector(".question-form");
+        const newForm = formCopyTarget.cloneNode(true);
+
+        newForm.innerHTML = newForm.innerHTML.replace(/form-(\d)-/g, `form-${currentFormCount}-`);
+        formsetDiv.appendChild(newForm);
+        totalForms.value = currentFormCount + 1;
+    });
+</script> -->
+    {% endblock %} 

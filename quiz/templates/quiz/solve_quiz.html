@@ -8,13 +8,19 @@
     {% csrf_token %}
     {% for question in questions %}
     <div>
-      <h5><strong>{{ forloop.counter }}. {{ question.text }}</strong></h5>
-      {% for option in question.options.all %}
+      <!-- <h5><strong>{{ forloop.counter }}. {{ question.text }}</strong></h5> -->
+      <p><strong>{{ question.question }}</strong></p>
+      <label><input type="radio" name="{{ question.id }}" value="options_A"> {{ question.options_A }}</label><br>
+      <label><input type="radio" name="{{ question.id }}" value="options_B"> {{ question.options_B }}</label><br>
+      <label><input type="radio" name="{{ question.id }}" value="options_C"> {{ question.options_C }}</label><br>
+      <label><input type="radio" name="{{ question.id }}" value="options_D"> {{ question.options_D }}</label><br>
+    
+      <!-- {% for option in question.options.all %}
       <label>
         <input type="radio" name="{{ question.id }}" value="{{ option.id }}">
         {{ option.text }}
       </label><br>
-      {% endfor %}
+      {% endfor %} -->
     </div>
     <hr>
     {% endfor %}

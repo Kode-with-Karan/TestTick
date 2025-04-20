@@ -1,48 +1,148 @@
 
 # quiz/views.py
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-
+from django.contrib import messages
 from django.utils import timezone
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 import os
-from .models import UploadedFile, Quiz, Question, Option, UserAnswer, StudentQuiz
-from .forms import UploadQuizFileForm
+from .models import UploadedFile, Quiz, Question, Option, UserAnswer, StudentQuiz, Quiz_UserAnswer, UsersAnswer
+from .forms import UploadQuizFileForm, QuizForm, QuizQuestionFormSet
 from .utils import parse_word_file, parse_excel_file
+
+
+@login_required
+def create_quiz(request):
+    if request.method == 'POST':
+        form = QuizForm(request.POST)
+        formset = QuizQuestionFormSet(request.POST)
+
+        print(('True' if request.POST.get("is_public") else 'False'))
+
+        form.institute = request.user
+
+        quiz_file = request.FILES.get('quiz_file')  # 👈 Get the uploaded file if any
+
+        if quiz_file:
+            uploaded = UploadedFile.objects.create(
+                uploader=request.user,
+                file=quiz_file,
+                parsed=False
+            )
+
+            file_path = uploaded.file.path
+            ext = os.path.splitext(file_path)[1]
+
+            if ext in ['.docx', '.doc']:
+                parse_word_file(file_path, request.user,
+                                 title = request.POST.get("title"), 
+                                 description =  request.POST.get("description"),
+                                 is_public = ('True' if request.POST.get("is_public") else 'False'), 
+                                 start_time = request.POST.get("start_time"), 
+                                 end_time = request.POST.get("end_time"), 
+                                 shuffle_questions = ('True' if request.POST.get("shuffle_questions") else 'False'),
+                                 price = request.POST.get("price"),
+                                 )
+            elif ext in ['.xlsx', '.xls']:
+                parse_excel_file(file_path, request.user,
+                                 title = request.POST.get("title"), 
+                                 description =  request.POST.get("description"),
+                                 is_public = ('True' if request.POST.get("is_public") else 'False'), 
+                                 start_time = request.POST.get("start_time"), 
+                                 end_time = request.POST.get("end_time"), 
+                                 shuffle_questions = ('True' if request.POST.get("shuffle_questions") else 'False'),
+                                 price = request.POST.get("price"),
+                                 )
+
+            uploaded.parsed = True
+            uploaded.save()
+
+            messages.success(request, "Quiz created from uploaded file.")
+            return redirect('quiz_list')  # Change to your actual quiz list page
+
+        if form.is_valid() and formset.is_valid():
+            quiz = form.save(commit=False)
+            quiz.created_by = request.user
+            quiz.save()
+            formset.instance = quiz
+            formset.save()
+
+            messages.success(request, "Quiz created manually.")
+            return redirect('quiz_list')
+
+    else:
+        form = QuizForm()
+        formset = QuizQuestionFormSet()
+
+    return render(request, 'quiz/create_quiz.html', {
+        'form': form,
+        'formset': formset,
+    })
+
+# def create_quiz(request):
+#     if request.method == 'POST':
+#         form = QuizForm(request.POST)
+#         formset = QuizQuestionFormSet(request.POST, prefix='form')  # 💡 Add prefix here
+
+#         if form.is_valid() and formset.is_valid():
+#             quiz = form.save()
+#             questions = formset.save(commit=False)
+#             for q in questions:
+#                 q.quiz = quiz
+#                 q.save()
+#             return redirect('home')
+
+#     else:
+#         form = QuizForm()
+#         formset = QuizQuestionFormSet(prefix='form')  # 💡 Add prefix here too
+
+#     return render(request, 'quiz/create_quiz.html', {'form': form, 'formset': formset})
 
 
 @login_required
 def solve_quiz(request, pk):
     quiz = get_object_or_404(Quiz, pk=pk)
 
-    # Restrict access based on time
-    if timezone.now() < quiz.start_time or timezone.now() > quiz.end_time:
-        return render(request, 'quiz/quiz_unavailable.html', {'quiz': quiz})
+    if quiz.start_time and quiz.end_time:
+        now = timezone.now()
+        if now < quiz.start_time or now > quiz.end_time:
+            return render(request, 'quiz/quiz_unavailable.html', {'quiz': quiz})
 
-    questions = quiz.questions.all().prefetch_related('options')
+    questions = quiz.quiz_questions.all()
+
+    print(questions)
 
     if quiz.shuffle_questions:
         questions = list(questions.order_by('?'))
 
     if request.method == 'POST':
         score = 0
-        total_questions = len(questions)
+
+        # Create the UsersAnswer record for this attempt
+        users_answer = UsersAnswer.objects.create(user=request.user, quiz=quiz)
 
         for question in questions:
-            selected_option_id = request.POST.get(str(question.id))
-            if selected_option_id:
-                selected_option = Option.objects.get(pk=selected_option_id)
-                is_correct = selected_option.is_correct
-                UserAnswer.objects.create(
-                    user=request.user,
-                    question=question,
-                    selected_option=selected_option,
-                    is_correct=is_correct
-                )
+            selected = request.POST.get(str(question.id))  # should be 'options_A', etc.
+            correct = question.is_correct
+
+            if selected:
+                is_correct = selected == correct
                 if is_correct:
                     score += 1
 
+                Quiz_UserAnswer.objects.create(
+                    user_answer=users_answer,
+                    question=question.question,
+                    options_A=question.options_A,
+                    options_B=question.options_B,
+                    options_C=question.options_C,
+                    options_D=question.options_D,
+                    is_correct = correct,
+                    is_selected=selected  # what user selected
+                )
+
+        # Save score separately
         StudentQuiz.objects.update_or_create(
             quiz=quiz,
             student=request.user,
@@ -53,22 +153,103 @@ def solve_quiz(request, pk):
 
     return render(request, 'quiz/solve_quiz.html', {
         'quiz': quiz,
-        'questions': questions
+        'questions': questions,
     })
+
 
 @login_required
 def quiz_result(request, pk):
     quiz = get_object_or_404(Quiz, pk=pk)
-    student_quiz = StudentQuiz.objects.filter(quiz=quiz, student=request.user).first()
-    user_answers = UserAnswer.objects.filter(user=request.user, question__quiz=quiz)
 
-    print(user_answers)
+    # Fetch the user's answer record for this quiz
+    users_answer = UsersAnswer.objects.filter(user=request.user, quiz=quiz).last()
+
+    print(users_answer)
+
+    if not users_answer:
+        return render(request, 'quiz/quiz_not_taken.html', {'quiz': quiz})
+
+    # Get all the submitted answers linked to this quiz attempt
+    submitted_answers = users_answer.quiz_user_answer.all()
+    print(submitted_answers[0].is_selected)
+
+    # Optional: Calculate score (assuming 'is_correct' means the correct option, and we compare with selected)
+
+    for ans in submitted_answers:
+        print(ans.is_correct, ans.is_selected , ans.is_correct == ans.is_selected)
+
+    correct_count = sum(1 for ans in submitted_answers if ans.is_correct == ans.is_selected)
+    # correct_count = 1
+    total_questions = submitted_answers.count()
+    score = (correct_count / total_questions) * 100 if total_questions else 0
 
     return render(request, 'quiz/quiz_result.html', {
         'quiz': quiz,
-        'student_quiz': student_quiz,
-        'user_answers': user_answers,
+        'users_answer': users_answer,
+        'submitted_answers': submitted_answers,
+        'correct_answers': correct_count,
+        'total_questions': total_questions,
+        'score': score,
+        'result_message': "Great job!" if score >= 70 else "Keep trying!",
     })
+
+# @login_required
+# def solve_quiz(request, pk):
+#     quiz = get_object_or_404(Quiz, pk=pk)
+
+#     # Restrict access based on time
+#     # if timezone.now() < quiz.start_time or timezone.now() > quiz.end_time:
+#     #     return render(request, 'quiz/quiz_unavailable.html', {'quiz': quiz})
+
+#     questions = quiz.questions.all().prefetch_related('options')
+
+#     if quiz.shuffle_questions:
+#         questions = list(questions.order_by('?'))
+
+#     if request.method == 'POST':
+#         score = 0
+#         total_questions = len(questions)
+
+#         for question in questions:
+#             selected_option_id = request.POST.get(str(question.id))
+#             if selected_option_id:
+#                 selected_option = Option.objects.get(pk=selected_option_id)
+#                 is_correct = selected_option.is_correct
+#                 UserAnswer.objects.create(
+#                     user=request.user,
+#                     question=question,
+#                     selected_option=selected_option,
+#                     is_correct=is_correct
+#                 )
+#                 if is_correct:
+#                     score += 1
+
+#         StudentQuiz.objects.update_or_create(
+#             quiz=quiz,
+#             student=request.user,
+#             defaults={'score': score, 'completed': True}
+#         )
+
+#         return HttpResponseRedirect(reverse('quiz_result', args=[quiz.pk]))
+
+#     return render(request, 'quiz/solve_quiz.html', {
+#         'quiz': quiz,
+#         'questions': questions
+#     })
+
+# @login_required
+# def quiz_result(request, pk):
+#     quiz = get_object_or_404(Quiz, pk=pk)
+#     student_quiz = StudentQuiz.objects.filter(quiz=quiz, student=request.user).first()
+#     user_answers = UserAnswer.objects.filter(user=request.user, question__quiz=quiz)
+
+#     print(user_answers)
+
+#     return render(request, 'quiz/quiz_result.html', {
+#         'quiz': quiz,
+#         'student_quiz': student_quiz,
+#         'user_answers': user_answers,
+#     })
 
 def quiz_list(request):
     quizzes = Quiz.objects.filter(is_public=True)

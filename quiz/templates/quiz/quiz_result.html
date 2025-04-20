@@ -4,19 +4,34 @@
 
 <div class="container">
 
-<h2>Quiz Result: {{ quiz.title }}</h2>
-<p>Your Score: {{ student_quiz.score }} / {{ quiz.questions.count }}</p>
+  <div class="question-result">
 
-<h3>Answers:</h3>
-<ul>
-  {% for answer in user_answers %}
-    <li>
-      <strong>{{ answer.question.text }}</strong><br>
-      Your answer: {{ answer.selected_option.text }} —
-      {% if answer.is_correct %}<span style="color: green;">Correct</span>{% else %}<span style="color: red;">Incorrect</span>{% endif %}
-    </li>
-  {% endfor %}
-</ul>
+    <h2>Quiz Result: {{ quiz.title }}</h2>
+    <p>Your Score: {{ student_quiz.score }} / {{ quiz.questions.count }}</p>
+    <p>Your Score: {{ score }} / {{ correct_answers }}</p>
+
+    {% for ans in submitted_answers %}
+    <div class="question-result">
+      <p><strong>Question:</strong> {{ ans.question }}</p>
+      <ul>
+        <li>A. {{ ans.options_A }}</li>
+        <li>B. {{ ans.options_B }}</li>
+        <li>C. {{ ans.options_C }}</li>
+        <li>D. {{ ans.options_D }}</li>
+      </ul>
+      <p><strong>Your Answer:</strong> {{ ans.is_selected|title }}</p>
+      <p><strong>Correct Answer:</strong> {{ ans.is_correct|title }}</p>
+      {% if ans.is_correct == ans.is_selected %}
+      <p style="color: green;">Correct</p>
+      {% else %}
+      <p style="color: red;">Incorrect</p>
+      {% endif %}
+    </div>
+    {% endfor %}
+
+
 </div>
 
-{% endblock %}
+  </div>
+
+  {% endblock %}
