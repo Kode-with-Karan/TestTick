@@ -2,41 +2,161 @@
 {% load static %}
 {% block content %}
 
+<style>
+    form{
+        margin: 50px auto;
+    }
+    .form_div {
+        display: flex;
+        justify-content: space-between;
+        align-content: center;
+        align-items: baseline;
+    }
+</style>
+
+
 <div class="container">
     <h1>Create a New Quiz</h1>
-    
-    <form method="post" enctype="multipart/form-data">  <!-- IMPORTANT: enctype for file uploads -->
+
+    <form method="post" enctype="multipart/form-data"> <!-- IMPORTANT: enctype for file uploads -->
         {% csrf_token %}
-        {{ form.as_p }}
-        
-        <label for="quiz_file"><strong>Or Upload Quiz File (.docx or .xlsx):</strong></label>
-        <input type="file" name="quiz_file" accept=".docx,.doc,.xlsx,.xls">
+
+        <!-- {{ form.as_p }} -->
+
+        <div class="form_div">
+            <label for="id_title">
+                <h4>Title:</h4>
+            </label>
+            <input type="text" class="w-75 form-control p-3 mb-4 border-primary bg-light" maxlength="255" name="title"
+                id="id_title" placeholder="Title" required>
+        </div>
+
+        <div class="form_div">
+            <label for="id_start_time">
+                <h4>Start Time:</h4>
+            </label>
+            <input type="datetime-local" id="id_start_time" name="start_time"
+                class="w-75 form-control p-3 mb-4 border-primary bg-light" placeholder="Your Name" required>
+        </div>
+        <div class="form_div">
+            <label for="id_end_time">
+                <h4>End Time:</h4>
+            </label>
+            <input type="datetime-local" id="id_end_time" name="end_time"
+                class="w-75 form-control p-3 mb-4 border-primary bg-light" placeholder="Your Name" required>
+        </div>
+        <div class="form_div">
+            <label for="id_price">
+                <h4>Price:</h4>
+            </label>
+            <input type="number" id="id_price" name="price" value="0.0" step="0.01"
+                class="w-75 form-control p-3 mb-4 border-primary bg-light" placeholder="Your Name">
+        </div>
+        <div class="form_div">
+            <label for="id_is_public">
+                <h4>Public:</h4>
+            </label>
+            <input type="checkbox" id="id_is_public" name="is_public"
+                class="w-75 form-control p-3 mb-4 border-primary bg-light" placeholder="Your Name">
+        </div>
+        <div class="form_div">
+            <label for="id_shuffle_questions">
+                <h4>Shuffle Questions:</h4>
+            </label>
+            <input type="checkbox" id="id_shuffle_questions" name="shuffle_questions"
+                class="w-75 form-control p-3 mb-4 border-primary bg-light" placeholder="Your Name">
+        </div>
+        <textarea class="w-100 form-control mb-4 p-3 border-primary bg-light" rows="4" cols="10" id="id_description"
+            name="description" placeholder="Description" required></textarea>
+
+
+        <label for="quiz_file"><h4>Or Upload Quiz File (.docx or .xlsx):</h4></label>
+        <input type="file" name="quiz_file" class="w-100 form-control p-3 mb-4 border-primary bg-light" accept=".docx,.doc,.xlsx,.xls">
 
         <hr>
         <h3>Or Add Questions Manually</h3>
         <div id="question-formset">
             {{ formset.management_form }}
             {% for form in formset %}
-                <div class="question-form" style="border: 1px solid #ccc; margin-bottom: 10px; padding: 10px;">
-                    {{ form.as_p }}
-                </div>
+            <div class="question-form" style="border: 1px solid #ccc; margin-bottom: 10px; padding: 10px;">
+                {{ form.as_p }}
+
+                <!-- <textarea class="w-100 form-control mb-4 p-3 border-primary bg-light" rows="4" cols="10" id="id_quiz_questions-0-question"
+            name="quiz_questions-0-question" placeholder="Question" required></textarea>
+            <div class="form_div">
+                <label for="id_quiz_questions-0-options_A">
+                    <h4>Option A:</h4>
+                </label>
+                <input type="text" class="w-75 form-control p-3 mb-4 border-primary bg-light" maxlength="255" name="quiz_questions-0-options_A"
+                    id="id_quiz_questions-0-options_A" placeholder="Option A" required>
+            </div>
+            <div class="form_div">
+                <label for="id_quiz_questions-0-options_B">
+                    <h4>Option B:</h4>
+                </label>
+                <input type="text" class="w-75 form-control p-3 mb-4 border-primary bg-light" maxlength="255" name="quiz_questions-0-options_B"
+                    id="id_quiz_questions-0-options_B" placeholder="Option B" required>
+            </div>
+            <div class="form_div">
+                <label for="id_quiz_questions-0-options_C">
+                    <h4>Option C:</h4>
+                </label>
+                <input type="text" class="w-75 form-control p-3 mb-4 border-primary bg-light" maxlength="255" name="quiz_questions-0-options_C"
+                    id="id_quiz_questions-0-options_C" placeholder="Option C" required>
+            </div>
+            <div class="form_div">
+                <label for="id_quiz_questions-0-options_D">
+                    <h4>Option D:</h4>
+                </label>
+                <input type="text" class="w-75 form-control p-3 mb-4 border-primary bg-light" maxlength="255" name="quiz_questions-0-options_D"
+                    id="id_quiz_questions-0-options_D" placeholder="Option D" required>
+            </div>
+           
+            <div class="form_div">
+                <label for="id_quiz_questions-0-is_correct">
+                    <h4>Correct Option:</h4>
+                </label>
+                <select name="quiz_questions-0-is_correct" id="id_quiz_questions-0-is_correct" class="w-75 form-control p-3 mb-4 border-primary bg-light">
+                    <option value="" selected="">---------</option>
+                  
+                    <option value="options_A">Options A</option>
+                  
+                    <option value="options_B">Options B</option>
+                  
+                    <option value="options_C">Options C</option>
+                  
+                    <option value="options_D">Options D</option>
+                  
+                  </select>
+            </div>
+
+            </div>
             {% endfor %}
         </div>
 
-        <button type="button" id="add-question">Add More Questions</button>
-        <button type="submit">Create Quiz</button>
+        <button type="button" id="add-question" class=" btn btn-primary btn-md-rectangle d-lg-inline-flex py-2 px-4">Add
+            More Questions</button>
+        <button class=" btn btn-primary btn-md-rectangle d-lg-inline-flex py-2 px-4" type="submit">Create Quiz</button> -->
+
+        <!-- <button type="button" id="add-question">Add More Questions</button>
+        <button type="submit">Create Quiz</button> -->
     </form>
 </div>
 
 <script>
     const addBtn = document.getElementById("add-question");
     const formsetDiv = document.getElementById("question-formset");
-    const totalForms = document.querySelector("#id_form-TOTAL_FORMS");
+    const totalForms = document.querySelector("#id_quiz_questions-TOTAL_FORMS");
 
     addBtn.addEventListener("click", () => {
+        console.log("Hello")
         const currentFormCount = parseInt(totalForms.value);
         const formCopyTarget = document.querySelector(".question-form");
         const newForm = formCopyTarget.cloneNode(true);
+
+        // console.log(currentFormCount)
+        // console.log(formCopyTarget)
+        // console.log(newForm)
 
         newForm.innerHTML = newForm.innerHTML.replace(/form-(\d)-/g, `form-${currentFormCount}-`);
         formsetDiv.appendChild(newForm);
@@ -88,4 +208,4 @@
         totalForms.value = currentFormCount + 1;
     });
 </script> -->
-    {% endblock %} 
+{% endblock %}
