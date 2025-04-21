@@ -12,7 +12,7 @@ from .forms import UploadQuizFileForm, QuizForm, QuizQuestionFormSet
 from .utils import parse_word_file, parse_excel_file
 
 
-@login_required
+# @login_required
 def create_quiz(request):
     if request.method == 'POST':
         form = QuizForm(request.POST)
@@ -100,7 +100,7 @@ def create_quiz(request):
 #     return render(request, 'quiz/create_quiz.html', {'form': form, 'formset': formset})
 
 
-@login_required
+# @login_required
 def solve_quiz(request, pk):
     quiz = get_object_or_404(Quiz, pk=pk)
 
@@ -157,7 +157,7 @@ def solve_quiz(request, pk):
     })
 
 
-@login_required
+# @login_required
 def quiz_result(request, pk):
     quiz = get_object_or_404(Quiz, pk=pk)
 
