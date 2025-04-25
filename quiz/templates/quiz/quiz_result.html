@@ -7,11 +7,19 @@
   <div class="question-result">
 
     <h2>Quiz Result: {{ quiz.title }}</h2>
-    <p>Your Score: {{ score }} / {{ correct_answers }}</p>
+    <p>Your Score: {{ score }}</p>
+    <p>Your users_answer: {{ users_answer }}</p>
+    <p>Your submitted_answers_count: {{ submitted_answers_count }}</p>
+    <p>Your total_questions: {{ total_questions }}</p>
+    <p>Your correct_answers: {{ correct_answers }}</p>
+    <p>Your wrong_answers: {{ wrong_answers }}</p>
+    <p>Your skipped_questions: {{ skipped_questions }}</p>
+    <p>Your percentage: {{ percentage }}</p>
+    <p>Your result_message: {{ result_message }}</p>
 
     {% for ans in submitted_answers %}
     <div class="question-result">
-      <p><strong>Question:</strong> {{ ans.question }}</p>
+      <p><strong><pre><code>Question : {{ ans.question }}</code></pre></strong></p>
       <ul>
         <li>A. {{ ans.options_A }}</li>
         <li>B. {{ ans.options_B }}</li>

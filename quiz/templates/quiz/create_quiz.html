@@ -75,41 +75,41 @@
 
         <hr>
         <h3>Or Add Questions Manually</h3>
-        <div id="question-formset">
+        <div id="question-formset" class="p-5 bg-light rounded contact-form">
             {{ formset.management_form }}
             {% for form in formset %}
-            <div class="question-form" style="border: 1px solid #ccc; margin-bottom: 10px; padding: 10px;">
-                {{ form.as_p }}
+            <div class="question-form" style="border: 1px solid #ccc; margin-bottom: 10px; border-radius: 5px; padding: 10px;">
+                <!-- {{ form.as_p }} -->
 
-                <!-- <textarea class="w-100 form-control mb-4 p-3 border-primary bg-light" rows="4" cols="10" id="id_quiz_questions-0-question"
-            name="quiz_questions-0-question" placeholder="Question" required></textarea>
+                <textarea class="w-100 form-control mb-4 p-3 border-primary bg-light" rows="4" cols="10" id="id_quiz_questions-0-question"
+            name="quiz_questions-0-question" placeholder="Question"></textarea>
             <div class="form_div">
                 <label for="id_quiz_questions-0-options_A">
                     <h4>Option A:</h4>
                 </label>
                 <input type="text" class="w-75 form-control p-3 mb-4 border-primary bg-light" maxlength="255" name="quiz_questions-0-options_A"
-                    id="id_quiz_questions-0-options_A" placeholder="Option A" required>
+                    id="id_quiz_questions-0-options_A" placeholder="Option A" >
             </div>
             <div class="form_div">
                 <label for="id_quiz_questions-0-options_B">
                     <h4>Option B:</h4>
                 </label>
                 <input type="text" class="w-75 form-control p-3 mb-4 border-primary bg-light" maxlength="255" name="quiz_questions-0-options_B"
-                    id="id_quiz_questions-0-options_B" placeholder="Option B" required>
+                    id="id_quiz_questions-0-options_B" placeholder="Option B" >
             </div>
             <div class="form_div">
                 <label for="id_quiz_questions-0-options_C">
                     <h4>Option C:</h4>
                 </label>
                 <input type="text" class="w-75 form-control p-3 mb-4 border-primary bg-light" maxlength="255" name="quiz_questions-0-options_C"
-                    id="id_quiz_questions-0-options_C" placeholder="Option C" required>
+                    id="id_quiz_questions-0-options_C" placeholder="Option C" >
             </div>
             <div class="form_div">
                 <label for="id_quiz_questions-0-options_D">
                     <h4>Option D:</h4>
                 </label>
                 <input type="text" class="w-75 form-control p-3 mb-4 border-primary bg-light" maxlength="255" name="quiz_questions-0-options_D"
-                    id="id_quiz_questions-0-options_D" placeholder="Option D" required>
+                    id="id_quiz_questions-0-options_D" placeholder="Option D" >
             </div>
            
             <div class="form_div">
@@ -136,7 +136,7 @@
 
         <button type="button" id="add-question" class=" btn btn-primary btn-md-rectangle d-lg-inline-flex py-2 px-4">Add
             More Questions</button>
-        <button class=" btn btn-primary btn-md-rectangle d-lg-inline-flex py-2 px-4" type="submit">Create Quiz</button> -->
+        <button class=" btn btn-primary btn-md-rectangle d-lg-inline-flex py-2 px-4" type="submit">Create Quiz</button> 
 
         <!-- <button type="button" id="add-question">Add More Questions</button>
         <button type="submit">Create Quiz</button> -->

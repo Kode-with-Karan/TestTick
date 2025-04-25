@@ -7,10 +7,14 @@ from django.utils import timezone
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 import os
-from .models import UploadedFile, Quiz, Question, Option, UserAnswer, StudentQuiz, Quiz_UserAnswer, UsersAnswer
+from .models import UploadedFile, Quiz, Quiz_Question, Option, UserAnswer, StudentQuiz, Quiz_UserAnswer, UsersAnswer
 from .forms import UploadQuizFileForm, QuizForm, QuizQuestionFormSet
 from .utils import parse_word_file, parse_excel_file
+from institutions.models import Institution  
+from results.models import TestSummary
 
+def get_default_institution(user):
+    return Institution.objects.filter(user=user).first()  # assuming you have a relation
 
 # @login_required
 def create_quiz(request):
@@ -18,9 +22,10 @@ def create_quiz(request):
         form = QuizForm(request.POST)
         formset = QuizQuestionFormSet(request.POST)
 
-        print(('True' if request.POST.get("is_public") else 'False'))
+        print(get_default_institution(request.user))
 
-        form.institute = request.user
+        
+
 
         quiz_file = request.FILES.get('quiz_file')  # 👈 Get the uploaded file if any
 
@@ -63,6 +68,7 @@ def create_quiz(request):
 
         if form.is_valid() and formset.is_valid():
             quiz = form.save(commit=False)
+            quiz.institution = get_default_institution(request.user)
             quiz.created_by = request.user
             quiz.save()
             formset.instance = quiz
@@ -104,10 +110,13 @@ def create_quiz(request):
 def solve_quiz(request, pk):
     quiz = get_object_or_404(Quiz, pk=pk)
 
-    if quiz.start_time and quiz.end_time:
-        now = timezone.now()
-        if now < quiz.start_time or now > quiz.end_time:
-            return render(request, 'quiz/quiz_unavailable.html', {'quiz': quiz})
+    print("Kuch nahi")
+    print(quiz)
+
+    # if quiz.start_time and quiz.end_time:
+    #     now = timezone.now()
+    #     if now < quiz.start_time or now > quiz.end_time:
+    #         return render(request, 'quiz/quiz_unavailable.html', {'quiz': quiz})
 
     questions = quiz.quiz_questions.all()
 
@@ -142,6 +151,7 @@ def solve_quiz(request, pk):
                     is_selected=selected  # what user selected
                 )
 
+        
         # Save score separately
         StudentQuiz.objects.update_or_create(
             quiz=quiz,
@@ -164,10 +174,31 @@ def quiz_result(request, pk):
     # Fetch the user's answer record for this quiz
     users_answer = UsersAnswer.objects.filter(user=request.user, quiz=quiz).last()
 
-    print(users_answer)
-
     if not users_answer:
         return render(request, 'quiz/quiz_not_taken.html', {'quiz': quiz})
+    
+    
+    all_questions = Quiz_Question.objects.filter(quiz=quiz)
+    all_answers = Quiz_UserAnswer.objects.filter(user_answer=users_answer)
+
+    print(all_answers)
+
+    total_questions = all_questions.count()
+    correct_answers = 0
+    wrong_answers = 0
+    skipped_questions = 0  # If none selected
+
+    for ans in all_answers:
+        if not ans.is_selected:
+            skipped_questions += 1
+        elif ans.is_selected == ans.is_correct:
+            correct_answers += 1
+        else:
+            wrong_answers += 1
+
+    skipped_questions = total_questions-(correct_answers+wrong_answers)  # If none selected
+    score = correct_answers  # Assuming 1 point per correct answer
+    percentage = (correct_answers / total_questions * 100) if total_questions else 0
 
     # Get all the submitted answers linked to this quiz attempt
     submitted_answers = users_answer.quiz_user_answer.all()
@@ -178,18 +209,37 @@ def quiz_result(request, pk):
     for ans in submitted_answers:
         print(ans.is_correct, ans.is_selected , ans.is_correct == ans.is_selected)
 
-    correct_count = sum(1 for ans in submitted_answers if ans.is_correct == ans.is_selected)
-    # correct_count = 1
-    total_questions = submitted_answers.count()
-    score = (correct_count / total_questions) * 100 if total_questions else 0
+    # print()
+
+    TestSummary.objects.create(
+        user = request.user,
+        institution = get_default_institution(request.user),
+        test_name = quiz,
+        total_questions = total_questions,
+        correct_answers = correct_answers,
+        wrong_answers =wrong_answers,
+        skipped_questions = skipped_questions,
+        score = score,
+        percentage = percentage,
+        # time_taken = timezone.now().time(),
+    )
+
+    # correct_count = sum(1 for ans in submitted_answers if ans.is_correct == ans.is_selected)
+    # # correct_count = 1
+    # total_questions = submitted_answers.count()
+    # score = (correct_count / total_questions) * 100 if total_questions else 0
 
     return render(request, 'quiz/quiz_result.html', {
         'quiz': quiz,
         'users_answer': users_answer,
         'submitted_answers': submitted_answers,
-        'correct_answers': correct_count,
+        'submitted_answers_count': correct_answers+wrong_answers,
+        'correct_answers': correct_answers,
+        'wrong_answers': wrong_answers,
+        'skipped_questions': skipped_questions,
         'total_questions': total_questions,
         'score': score,
+        'percentage':percentage,
         'result_message': "Great job!" if score >= 70 else "Keep trying!",
     })
 

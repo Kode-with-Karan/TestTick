@@ -9,11 +9,11 @@
     {% for question in questions %}
     <div>
       <!-- <h5><strong>{{ forloop.counter }}. {{ question.text }}</strong></h5> -->
-      <p><strong>{{ question.question }}</strong></p>
-      <label><input type="radio" name="{{ question.id }}" value="options_A"> {{ question.options_A }}</label><br>
-      <label><input type="radio" name="{{ question.id }}" value="options_B"> {{ question.options_B }}</label><br>
-      <label><input type="radio" name="{{ question.id }}" value="options_C"> {{ question.options_C }}</label><br>
-      <label><input type="radio" name="{{ question.id }}" value="options_D"> {{ question.options_D }}</label><br>
+      <p><strong><pre><code>Question : {{ question.question }}</code></pre></strong></p>
+      <label class="w-100 form-control p-3 border-primary bg-light" ><input  type="radio" name="{{ question.id }}" value="options_A"> {{ question.options_A }}</label><br>
+      <label class="w-100 form-control p-3 border-primary bg-light" ><input  type="radio" name="{{ question.id }}" value="options_B"> {{ question.options_B }}</label><br>
+      <label class="w-100 form-control p-3 border-primary bg-light" ><input  type="radio" name="{{ question.id }}" value="options_C"> {{ question.options_C }}</label><br>
+      <label class="w-100 form-control p-3 border-primary bg-light" ><input  type="radio" name="{{ question.id }}" value="options_D"> {{ question.options_D }}</label><br>
     
       <!-- {% for option in question.options.all %}
       <label>

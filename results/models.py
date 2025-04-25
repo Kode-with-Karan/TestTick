@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 User = get_user_model()
 from quiz.models import Question  # Adjust this import based on your app structure
+from institutions.models import Institution
 
 class StudentAnswer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='answers')
@@ -18,6 +19,7 @@ class StudentAnswer(models.Model):
 
 class TestSummary(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='test_summaries')
+    institution = models.ForeignKey(Institution, on_delete=models.CASCADE,default=0)
     test_name = models.CharField(max_length=200)
     total_questions = models.PositiveIntegerField()
     correct_answers = models.PositiveIntegerField()
@@ -25,7 +27,7 @@ class TestSummary(models.Model):
     skipped_questions = models.PositiveIntegerField(default=0)
     score = models.FloatField()
     percentage = models.FloatField()
-    time_taken = models.DurationField()  # Use timedelta to track time
+    # time_taken = models.DurationField()  # Use timedelta to track time
     date_taken = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

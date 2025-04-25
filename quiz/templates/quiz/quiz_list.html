@@ -62,7 +62,7 @@
                                         <div class="w-100 d-flex flex-column text-start ps-4">
                                             <div class="d-flex justify-content-between border-bottom border-primary pb-2 mb-2">
                                                 <h4>{{ quiz.title }}</h4>
-                                                <h4 class="text-primary"><a href="{% url 'solve_quiz' quiz.pk %}">Start</a></h4>
+                                                <h4 class="text-primary"><a href="{% url 'solve_quiz' quiz.pk %}">Start {{quiz.pk}}</a></h4>
                                             </div>
                                             <p class="mb-0">{{ quiz.description }}</p>
                                         </div>
