@@ -33,3 +33,7 @@ class UploadQuizFileForm(forms.ModelForm):
         model = UploadedFile
         fields = ['file']
         # fields = ['title', 'description', 'institution', 'start_time', 'end_time', 'is_public', 'price', 'shuffle_questions', 'file']
+
+
+class PasscodeForm(forms.Form):
+    passcode = forms.CharField(label='Enter Passcode', max_length=20)

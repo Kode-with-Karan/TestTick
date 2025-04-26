@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    form{
+        margin: auto;
+        width: fit-content;
+        text-align: center; 
+        transform: translateY(150%);
+        margin-bottom: 50vh;
+    }
+</style>
+
+
+<form method="post">
+    {% csrf_token %}
+    <div class="form_div">
+        <input type="text" class="w-100 form-control p-3 mb-4 border-primary bg-light" maxlength="6" name="passcode"
+            id="id_passcode" placeholder="Code" style="text-align: center;" required>
+    </div>
+
+    <button class=" btn btn-primary btn-md-rectangle d-lg-inline-flex py-2 px-4" type="submit">Create Quiz</button> 
+</form>
+
+{% endblock %}

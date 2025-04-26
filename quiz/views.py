@@ -8,10 +8,48 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 import os
 from .models import UploadedFile, Quiz, Quiz_Question, Option, UserAnswer, StudentQuiz, Quiz_UserAnswer, UsersAnswer
-from .forms import UploadQuizFileForm, QuizForm, QuizQuestionFormSet
+from .forms import UploadQuizFileForm, QuizForm, QuizQuestionFormSet, PasscodeForm
 from .utils import parse_word_file, parse_excel_file
 from institutions.models import Institution  
 from results.models import TestSummary
+from users.models import User
+
+
+def quiz_code(request):
+
+    form = PasscodeForm(request.POST or None)
+    error = None
+
+    if request.method == 'POST':
+        if form.is_valid():
+            code = form.cleaned_data['passcode']
+            print(code)
+            split_code = [code[i:i+2] for i in range(0, len(code), 2)]
+            print(split_code)
+            institution = get_object_or_404(Institution, pk=split_code[1])
+            print(institution)
+            user = get_object_or_404(User, pk=split_code[2])
+            print(user)
+            quiz = get_object_or_404(Quiz, pk=split_code[0], institution=institution, created_by= user)
+            return redirect('solve_quiz', pk=quiz.pk)
+
+    return render(request, 'quiz/enter_passcode.html', {'form': form, 'error': error})
+
+# def quiz_passcode_view(request):
+#     form = PasscodeForm(request.POST or None)
+#     error = None
+
+#     if request.method == 'POST':
+#         if form.is_valid():
+#             code = form.cleaned_data['passcode']
+#             try:
+#                 quiz = Quiz.objects.get(passcode=code)
+#                 return redirect('quiz_detail', quiz_id=quiz.id)
+#             except Quiz.DoesNotExist:
+#                 error = "Invalid passcode. Try again."
+
+#     return render(request, 'quiz/enter_passcode.html', {'form': form, 'error': error})
+
 
 def get_default_institution(user):
     return Institution.objects.filter(user=user).first()  # assuming you have a relation
@@ -108,58 +146,59 @@ def create_quiz(request):
 
 # @login_required
 def solve_quiz(request, pk):
-    quiz = get_object_or_404(Quiz, pk=pk)
 
-    print("Kuch nahi")
-    print(quiz)
+    if request.user.is_authenticated:
+        quiz = get_object_or_404(Quiz, pk=pk)
 
-    # if quiz.start_time and quiz.end_time:
-    #     now = timezone.now()
-    #     if now < quiz.start_time or now > quiz.end_time:
-    #         return render(request, 'quiz/quiz_unavailable.html', {'quiz': quiz})
+        # if quiz.start_time and quiz.end_time:
+        #     now = timezone.now()
+        #     if now < quiz.start_time or now > quiz.end_time:
+        #         return render(request, 'quiz/quiz_unavailable.html', {'quiz': quiz})
 
-    questions = quiz.quiz_questions.all()
+        questions = quiz.quiz_questions.all()
 
-    print(questions)
+        # print(questions)
 
-    if quiz.shuffle_questions:
-        questions = list(questions.order_by('?'))
+        if quiz.shuffle_questions:
+            questions = list(questions.order_by('?'))
 
-    if request.method == 'POST':
-        score = 0
+        if request.method == 'POST':
+            score = 0
 
-        # Create the UsersAnswer record for this attempt
-        users_answer = UsersAnswer.objects.create(user=request.user, quiz=quiz)
+            # Create the UsersAnswer record for this attempt
+            users_answer = UsersAnswer.objects.create(user=request.user, quiz=quiz)
 
-        for question in questions:
-            selected = request.POST.get(str(question.id))  # should be 'options_A', etc.
-            correct = question.is_correct
+            for question in questions:
+                selected = request.POST.get(str(question.id))  # should be 'options_A', etc.
+                correct = question.is_correct
 
-            if selected:
-                is_correct = selected == correct
-                if is_correct:
-                    score += 1
+                if selected:
+                    is_correct = selected == correct
+                    if is_correct:
+                        score += 1
 
-                Quiz_UserAnswer.objects.create(
-                    user_answer=users_answer,
-                    question=question.question,
-                    options_A=question.options_A,
-                    options_B=question.options_B,
-                    options_C=question.options_C,
-                    options_D=question.options_D,
-                    is_correct = correct,
-                    is_selected=selected  # what user selected
-                )
+                    Quiz_UserAnswer.objects.create(
+                        user_answer=users_answer,
+                        question=question.question,
+                        options_A=question.options_A,
+                        options_B=question.options_B,
+                        options_C=question.options_C,
+                        options_D=question.options_D,
+                        is_correct = correct,
+                        is_selected=selected  # what user selected
+                    )
 
-        
-        # Save score separately
-        StudentQuiz.objects.update_or_create(
-            quiz=quiz,
-            student=request.user,
-            defaults={'score': score, 'completed': True}
-        )
+            
+            # Save score separately
+            StudentQuiz.objects.update_or_create(
+                quiz=quiz,
+                student=request.user,
+                defaults={'score': score, 'completed': True}
+            )
 
-        return HttpResponseRedirect(reverse('quiz_result', args=[quiz.pk]))
+            return HttpResponseRedirect(reverse('quiz_result', args=[quiz.pk]))
+    else:
+        return redirect
 
     return render(request, 'quiz/solve_quiz.html', {
         'quiz': quiz,
