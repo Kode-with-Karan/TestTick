@@ -13,7 +13,6 @@ from .utils import parse_word_file, parse_excel_file
 from institutions.models import Institution  
 from results.models import TestSummary
 from users.models import User
-import re
 
 
 def quiz_code(request):
@@ -35,21 +34,6 @@ def quiz_code(request):
             return redirect('solve_quiz', pk=quiz.pk)
 
     return render(request, 'quiz/enter_passcode.html', {'form': form, 'error': error})
-
-# def quiz_passcode_view(request):
-#     form = PasscodeForm(request.POST or None)
-#     error = None
-
-#     if request.method == 'POST':
-#         if form.is_valid():
-#             code = form.cleaned_data['passcode']
-#             try:
-#                 quiz = Quiz.objects.get(passcode=code)
-#                 return redirect('quiz_detail', quiz_id=quiz.id)
-#             except Quiz.DoesNotExist:
-#                 error = "Invalid passcode. Try again."
-
-#     return render(request, 'quiz/enter_passcode.html', {'form': form, 'error': error})
 
 
 def get_default_institution(user):
