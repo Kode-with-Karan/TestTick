@@ -55,7 +55,7 @@ def quiz_code(request):
 def get_default_institution(user):
     return Institution.objects.filter(user=user).first()  # assuming you have a relation
 
-# @login_required
+@login_required
 def create_quiz(request):
     if request.method == 'POST':
         form = QuizForm(request.POST)
@@ -125,27 +125,8 @@ def create_quiz(request):
         'formset': formset,
     })
 
-# def create_quiz(request):
-#     if request.method == 'POST':
-#         form = QuizForm(request.POST)
-#         formset = QuizQuestionFormSet(request.POST, prefix='form')  # 💡 Add prefix here
 
-#         if form.is_valid() and formset.is_valid():
-#             quiz = form.save()
-#             questions = formset.save(commit=False)
-#             for q in questions:
-#                 q.quiz = quiz
-#                 q.save()
-#             return redirect('home')
-
-#     else:
-#         form = QuizForm()
-#         formset = QuizQuestionFormSet(prefix='form')  # 💡 Add prefix here too
-
-#     return render(request, 'quiz/create_quiz.html', {'form': form, 'formset': formset})
-
-
-# @login_required
+@login_required
 def solve_quiz(request, pk):
 
     if request.user.is_authenticated:
@@ -208,7 +189,7 @@ def solve_quiz(request, pk):
     })
 
 
-# @login_required
+@login_required
 def quiz_result(request, pk):
     quiz = get_object_or_404(Quiz, pk=pk)
 
@@ -265,11 +246,6 @@ def quiz_result(request, pk):
         # time_taken = timezone.now().time(),
     )
 
-    # correct_count = sum(1 for ans in submitted_answers if ans.is_correct == ans.is_selected)
-    # # correct_count = 1
-    # total_questions = submitted_answers.count()
-    # score = (correct_count / total_questions) * 100 if total_questions else 0
-
     return render(request, 'quiz/quiz_result.html', {
         'quiz': quiz,
         'users_answer': users_answer,
@@ -283,64 +259,6 @@ def quiz_result(request, pk):
         'percentage':percentage,
         'result_message': "Great job!" if score >= 70 else "Keep trying!",
     })
-
-# @login_required
-# def solve_quiz(request, pk):
-#     quiz = get_object_or_404(Quiz, pk=pk)
-
-#     # Restrict access based on time
-#     # if timezone.now() < quiz.start_time or timezone.now() > quiz.end_time:
-#     #     return render(request, 'quiz/quiz_unavailable.html', {'quiz': quiz})
-
-#     questions = quiz.questions.all().prefetch_related('options')
-
-#     if quiz.shuffle_questions:
-#         questions = list(questions.order_by('?'))
-
-#     if request.method == 'POST':
-#         score = 0
-#         total_questions = len(questions)
-
-#         for question in questions:
-#             selected_option_id = request.POST.get(str(question.id))
-#             if selected_option_id:
-#                 selected_option = Option.objects.get(pk=selected_option_id)
-#                 is_correct = selected_option.is_correct
-#                 UserAnswer.objects.create(
-#                     user=request.user,
-#                     question=question,
-#                     selected_option=selected_option,
-#                     is_correct=is_correct
-#                 )
-#                 if is_correct:
-#                     score += 1
-
-#         StudentQuiz.objects.update_or_create(
-#             quiz=quiz,
-#             student=request.user,
-#             defaults={'score': score, 'completed': True}
-#         )
-
-#         return HttpResponseRedirect(reverse('quiz_result', args=[quiz.pk]))
-
-#     return render(request, 'quiz/solve_quiz.html', {
-#         'quiz': quiz,
-#         'questions': questions
-#     })
-
-# @login_required
-# def quiz_result(request, pk):
-#     quiz = get_object_or_404(Quiz, pk=pk)
-#     student_quiz = StudentQuiz.objects.filter(quiz=quiz, student=request.user).first()
-#     user_answers = UserAnswer.objects.filter(user=request.user, question__quiz=quiz)
-
-#     print(user_answers)
-
-#     return render(request, 'quiz/quiz_result.html', {
-#         'quiz': quiz,
-#         'student_quiz': student_quiz,
-#         'user_answers': user_answers,
-#     })
 
 def quiz_list(request):
     quizzes = Quiz.objects.filter(is_public=True)
