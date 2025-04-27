@@ -1,10 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>Register</h2>
-  <form method="post" enctype="multipart/form-data">
+  
+  <form method="post" enctype="multipart/form-data" class="p-5 bg-light rounded contact-form" style="width: fit-content;margin: 50px auto;">
+    <h2 style="text-align: center;">Register</h2>
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Register</button>
+    <button type="submit" class=" btn btn-primary btn-md-rectangle d-lg-inline-flex py-2 px-4">Register</button>
   </form>
 {% endblock %}

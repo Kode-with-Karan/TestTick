@@ -2,6 +2,8 @@
 from django.db import models
 from institutions.models import Institution
 from users.models import User
+from django.utils import timezone
+
 
 class Quiz(models.Model):
     title = models.CharField(max_length=255)
@@ -107,3 +109,19 @@ class UserAnswer(models.Model):
     selected_option = models.ForeignKey(Option, on_delete=models.CASCADE)
     is_correct = models.BooleanField()
     answered_at = models.DateTimeField(auto_now_add=True)
+
+
+class QuizSession(models.Model):
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
+    session_id = models.IntegerField(default=0)
+    started = models.BooleanField(default=False)
+    current_question_index = models.IntegerField(default=0)
+    current_question_start_time = models.DateTimeField(null=True, blank=True)
+
+class StudentAnswer(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    session = models.ForeignKey(QuizSession, on_delete=models.CASCADE)
+    question = models.ForeignKey(Quiz_Question, on_delete=models.CASCADE)
+    selected_option = models.CharField(max_length=1)
+    is_correct = models.BooleanField()
+    time_taken = models.FloatField()  # in seconds

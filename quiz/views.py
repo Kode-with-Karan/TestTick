@@ -4,15 +4,16 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 import os
-from .models import UploadedFile, Quiz, Quiz_Question, Option, UserAnswer, StudentQuiz, Quiz_UserAnswer, UsersAnswer
+from .models import UploadedFile, Quiz, Quiz_Question, QuizSession, StudentAnswer, StudentQuiz, Quiz_UserAnswer, UsersAnswer
 from .forms import UploadQuizFileForm, QuizForm, QuizQuestionFormSet, PasscodeForm
 from .utils import parse_word_file, parse_excel_file
 from institutions.models import Institution  
 from results.models import TestSummary
 from users.models import User
+import re
 
 
 def quiz_code(request):
@@ -199,6 +200,7 @@ def solve_quiz(request, pk):
             return HttpResponseRedirect(reverse('quiz_result', args=[quiz.pk]))
     else:
         return redirect
+    
 
     return render(request, 'quiz/solve_quiz.html', {
         'quiz': quiz,
@@ -373,3 +375,156 @@ def upload_quiz_file(request):
         form = UploadQuizFileForm()
 
     return render(request, 'quiz/upload_file.html', {'form': form})
+
+def set_multi_quiz(request):
+
+    return render(request, 'quiz/upload_file.html')
+
+# Start the quiz
+def start_quiz(request, quiz_id):
+
+    last_quiz_session = QuizSession.objects.latest('id')
+    # quiz_session = last_quiz_session.id
+    session_id = int(last_quiz_session.id)+1
+
+
+    session = QuizSession.objects.create(
+        quiz_id=quiz_id,
+        session_id = session_id,
+        started=True,
+        current_question_start_time=timezone.now()
+    )
+    return redirect('institution_dashboard', session_id=session.id)
+
+# Student joins the quiz
+def student_quiz(request, session_id):
+
+    if QuizSession.objects.filter(session_id = session_id):
+        return render(request, 'quiz/student_quiz.html', {'session_id': session_id})
+
+    return render(request, 'quiz/quiz_unavailale.html', {'session_id': session_id})
+     
+    
+
+# API for live question update
+def quiz_status_api(request, session_id):
+    session = QuizSession.objects.get(session_id=session_id)
+    # print(session)
+    time_elapsed = (timezone.now() - session.current_question_start_time).seconds
+
+    if time_elapsed >= 20:
+        # print(time_elapsed)
+        session.current_question_index += 1
+        session.current_question_start_time = timezone.now()
+        session.save()
+
+    questions = session.quiz.quiz_questions.all()
+    if session.current_question_index >= len(questions):
+        return JsonResponse({'end': True})
+
+    question = questions[session.current_question_index]
+    data = {
+        'question': question.question,
+        'options': {
+            'A': question.options_A,
+            'B': question.options_B,
+            'C': question.options_C,
+            'D': question.options_D,
+        },
+        'time_left': 20 - time_elapsed,
+        'question_id': question.id,
+    }
+    # print(data)
+    return JsonResponse(data)
+
+# Submit Answer
+def submit_answer(request):
+    
+    if request.method == 'POST':
+        user = request.user
+        session_id = request.POST.get('session_id')
+        question_id = request.POST.get('question_id')
+        selected_option = request.POST.get('selected_option')
+        time_taken = request.POST.get('time_taken')
+
+        session = QuizSession.objects.get(session_id=session_id)
+        # quiz = Quiz.objects.get(id = session.quiz.id)
+        # users_answer = UsersAnswer.objects.create(user=user, quiz=quiz)
+
+        # question = Question.objects.get(id=question_id)
+        question = session.quiz.quiz_questions.get(id= question_id)
+
+        print(question.id)
+        print("options_"+selected_option)
+        is_correct = ("options_"+selected_option == question.is_correct)
+
+        # question = Quiz_Question.objects.get(id=80)
+
+        StudentAnswer.objects.create(
+            user=user,
+            session=session,
+            question=question,
+            selected_option=selected_option,
+            is_correct=is_correct,
+            time_taken=time_taken
+        )
+
+        # Quiz_UserAnswer.objects.create(
+        #     user_answer=users_answer,
+        #     question=question.question,
+        #     options_A=question.options_A,
+        #     options_B=question.options_B,
+        #     options_C=question.options_C,
+        #     options_D=question.options_D,
+        #     is_correct = question.is_correct,
+        #     is_selected="options_"+selected_option  # what user selected
+        # )
+
+        return JsonResponse({'success': True})
+
+# Institution Dashboard
+def institution_dashboard(request, session_id):
+    return render(request, 'quiz/institution_dashboard.html', {'session_id': session_id})
+
+# API for live leaderboard
+def leaderboard_api(request, session_id):
+    session = QuizSession.objects.get(session_id=session_id)
+    answers = StudentAnswer.objects.filter(session=session)
+    print(answers)
+
+    leaderboard = {}
+
+    for ans in answers:
+        user_id = ans.user.id
+        if user_id not in leaderboard:
+            leaderboard[user_id] = {
+                'username': ans.user.username,
+                'correct': 0,
+                'total_time': 0
+            }
+        if ans.is_correct:
+            leaderboard[user_id]['correct'] += 1
+            leaderboard[user_id]['total_time'] += ans.time_taken
+
+    ranked = sorted(leaderboard.values(), key=lambda x: (-x['correct'], x['total_time']))
+    ranked = [{'username': 'karan', 'correct': 1, 'total_time': 1.726}, {'username': 'karan2', 'correct': 0, 'total_time': 0}]
+    # print()
+    return JsonResponse({'leaderboard': ranked})
+
+from django.db.models import Max
+
+def start_live_quiz(request):
+    quizzes = Quiz.objects.all()
+
+    last_quiz_session = QuizSession.objects.latest('id')
+    # quiz_session = last_quiz_session.id
+    print(last_quiz_session.id)
+
+    
+    # text = str(quiz_session)
+    
+    # import re
+    # match = re.search(r'\((\d+)\)', text)
+    # number = match.group(1) if match else None
+
+    return render(request, 'quiz/start_live_quiz.html', {'quizzes': quizzes, 'session_id': int(last_quiz_session.id)+1 })

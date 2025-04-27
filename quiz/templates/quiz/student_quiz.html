@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<div class="p-5 bg-light rounded contact-form" style="margin: 50px;">
+    <h2 id="timer"></h2>
+    <h2><pre><code id="question"></code></pre></h2>
+    <div id="options"></div>
+</div>
+
+<style>
+    .selected-option {
+        background-color: #4CAF50 !important; /* Green background */
+        color: white !important; /* White text */
+        border: 2px solid #2E7D32 !important; /* Dark green border */
+    }
+</style>
+
+<script>
+    let sessionId = "{{ session_id }}";
+    let currentQuestionId = null; // Track which question is on screen
+    let startTime = null;
+    let hasAnswered = false; // To prevent multiple submissions
+
+    function fetchQuestion() {
+        $.get(`/quiz/api/quiz_status/${sessionId}/`, function(data) {
+            if (data.end) {
+                alert("Quiz Ended");
+                return;
+            }
+
+            if (currentQuestionId !== data.question_id) {
+                // New question arrived
+                $('#question').text(data.question);
+                $('#options').html('');
+                currentQuestionId = data.question_id;
+                startTime = new Date();
+                hasAnswered = false;
+
+                $.each(data.options, function(key, value) {
+                    $('#options').append(
+                        `<button class="w-100 form-control mb-4 p-3 border-primary bg-light" 
+                                  id="id_${key}" 
+                                  onclick="submitAnswer('${key}')">
+                            ${key}: ${value}
+                        </button><br>`
+                    );
+                });
+            }
+
+            // Update timer even if question not changed
+            $('#timer').text(data.time_left + " sec");
+        });
+    }
+
+    function submitAnswer(selectedOption) {
+        if (hasAnswered) return; // Prevent multiple submissions
+
+        hasAnswered = true;
+
+        // Disable all buttons
+        $("#options button").prop('disabled', true);
+
+        // Highlight the selected button
+        $("#id_" + selectedOption).addClass('selected-option');
+
+        let endTime = new Date();
+        let timeTaken = (endTime - startTime) / 1000;
+
+        $.post("/quiz/submit_answer/", {
+            'csrfmiddlewaretoken': '{{ csrf_token }}',
+            'session_id': sessionId,
+            'question_id': currentQuestionId,
+            'selected_option': selectedOption,
+            'time_taken': timeTaken
+        }, function(data) {
+            console.log("Answer submitted");
+        });
+    }
+
+    setInterval(fetchQuestion, 1000);
+</script>
+
+
+<!-- 
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<div class="p-5 bg-light rounded contact-form " style="margin: 50px;">
+
+
+    <h2 id="timer"></h2>
+    <h2><pre><code id="question"></code></pre></h2>
+    <div id="options" ></div>
+
+</div>
+    <script>
+        let sessionId = "{{ session_id }}";
+        let questionId = null;
+        let startTime = null;
+        
+
+        
+
+        function fetchQuestion() {
+            $.get(`/quiz/api/quiz_status/${sessionId}/`, function(data) {
+                if (data.end) {
+                    alert("Quiz Ended");
+                    return;
+                }
+                $('#question').text(data.question);
+                $('#options').html('');
+                questionId = data.question_id;
+                startTime = new Date();
+                $.each(data.options, function(key, value) {
+                    $('#options').append(`<button class="w-100 form-control mb-4 p-3 border-primary bg-light" id=id_${key} onclick="submitAnswer('${key}')">${key}: ${value}</button><br>`);
+                });
+                $('#timer').text(data.time_left + " sec");
+            });
+        }
+
+        function submitAnswer(selectedOption) {
+            let endTime = new Date();
+            let timeTaken = (endTime - startTime) / 1000;
+            $.post("/quiz/submit_answer/", {
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                'session_id': sessionId,
+                'question_id': questionId,
+                'selected_option': selectedOption,
+                'time_taken': timeTaken
+            }, function(data) {
+                console.log("Answer submitted");
+                
+                
+                // if (selectedOption == 'A'){
+                    
+                // }
+            });
+        }
+
+        setInterval(fetchQuestion, 1000);
+    </script>
+-->
+{% endblock %} 

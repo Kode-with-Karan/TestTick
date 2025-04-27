@@ -18,6 +18,7 @@
                     <a href="{% url 'quiz_list' %}" class="nav-item nav-link">Quiz</a>
                     <a href="{% url 'quiz_code' %}" class="nav-item nav-link">Code</a>
                     <a href="{% url 'create_quiz' %}" class="nav-item nav-link">Create Quiz</a>
+                    <a href="{% url 'start_live_quiz' %}" class="nav-item nav-link">Live Quiz</a>
                     <!-- <a href="{% url 'event' %}" class="nav-item nav-link">Events</a>
                     <a href="{% url 'menu' %}" class="nav-item nav-link">Menu</a>
                     <div class="nav-item dropdown">
@@ -32,9 +33,10 @@
                     </div> -->
                     <a href="{% url 'contact' %}" class="nav-item nav-link">Contact</a>
                 </div>
-                <button class="btn-search btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"
-                    data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search"></i></button>
-                <a href="" class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Login Now</a>
+                <!-- <button class="btn-search btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"
+                    data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search"></i></button> -->
+                <a href="{% url 'register' %}" class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill" style="margin-right: 5px;">Register</a>
+                <a href="{% url 'login' %}" class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Login</a>
             </div>
         </nav>
     </div>

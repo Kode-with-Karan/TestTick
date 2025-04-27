@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+  {% if messages %}
+  {% for message in messages %}
+  <p style="color: red;">{{ message }}</p>
+  {% endfor %}
+  {% endif %}
+
+  <form method="post" class="p-5 bg-light rounded contact-form" style="width: fit-content;margin: 50px auto;display: flex;flex-direction: column;align-items: center;">
+    <h2>Login</h2> <br><br>
+    {% csrf_token %}
+    <input type="text" class="w-100 form-control p-3 border-primary bg-light"  name="username" placeholder="Username" required><br>
+    <input type="password" class="w-100 form-control p-3 border-primary bg-light"  name="password" placeholder="Password" required><br>
+    <button type="submit" class=" btn btn-primary btn-md-rectangle d-lg-inline-flex py-2 px-4">Login</button>
+  </form>
+
+  {% endblock %}
