@@ -1,8 +1,85 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
+<style>
+    .typing-container {
+        font-size: 2rem;
+        white-space: nowrap;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        align-content: center;
+        height: 70vh;
+    }
+
+    .cursor {
+        display: inline-block;
+        width: 3px;
+        height: 2rem;
+        background-color: #d48429;
+        margin-left: 5px;
+        animation: blink 0.7s infinite;
+    }
+
+    @keyframes blink {
+
+        0%,
+        50% {
+            opacity: 1;
+        }
+
+        51%,
+        100% {
+            opacity: 0;
+        }
+    }
+</style>
 
 <h1 style="text-align: center;">Quiz not Started ...</h1>
 <a style="margin: auto;width: fit-content;display: block;" href="{{ request.path }}">Refresh</a>
 
-{% endblock %} 
+<div class="typing-container">
+    
+    <h1 class="text-primary">Test<span class="text-dark">Tick is </span></h1> &nbsp;&nbsp; <h1> <span id="typing-text"></span><span class="cursor"></span> by Karan ❤️</h1>
+</div>
+
+
+<script>
+    const words = ["Created", "Developed", "Designed", "Managed"];
+    const typingSpeed = 150; // typing speed
+    const erasingSpeed = 100; // erasing speed
+    const delayBetweenWords = 2000; // wait before deleting
+    let wordIndex = 0;
+    let charIndex = 0;
+    let typing = true;
+
+    function typeLoop() {
+        const textElement = document.getElementById("typing-text");
+
+        if (typing) {
+            if (charIndex < words[wordIndex].length) {
+                textElement.textContent += words[wordIndex].charAt(charIndex);
+                charIndex++;
+                setTimeout(typeLoop, typingSpeed);
+            } else {
+                typing = false;
+                setTimeout(typeLoop, delayBetweenWords);
+            }
+        } else {
+            if (charIndex > 0) {
+                textElement.textContent = words[wordIndex].substring(0, charIndex - 1);
+                charIndex--;
+                setTimeout(typeLoop, erasingSpeed);
+            } else {
+                typing = true;
+                wordIndex = (wordIndex + 1) % words.length;
+                setTimeout(typeLoop, typingSpeed);
+            }
+        }
+    }
+
+    window.onload = typeLoop;
+
+</script>
+{% endblock %}

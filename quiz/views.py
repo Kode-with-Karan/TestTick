@@ -39,7 +39,7 @@ def quiz_code(request):
 def get_default_institution(user):
     return Institution.objects.filter(user=user).first()  # assuming you have a relation
 
-@login_required
+@login_required(login_url='login')
 def create_quiz(request):
     if request.method == 'POST':
         form = QuizForm(request.POST)
@@ -110,7 +110,7 @@ def create_quiz(request):
     })
 
 
-@login_required
+@login_required(login_url='login')
 def solve_quiz(request, pk):
 
     if request.user.is_authenticated:
@@ -173,7 +173,7 @@ def solve_quiz(request, pk):
     })
 
 
-@login_required
+@login_required(login_url='login')
 def quiz_result(request, pk):
     quiz = get_object_or_404(Quiz, pk=pk)
 
@@ -409,7 +409,7 @@ def leaderboard_api(request, session_id):
             leaderboard[user_id]['total_time'] += ans.time_taken
 
     ranked = sorted(leaderboard.values(), key=lambda x: (-x['correct'], x['total_time']))
-    ranked = [{'username': 'karan', 'correct': 1, 'total_time': 1.726}, {'username': 'karan2', 'correct': 0, 'total_time': 0}]
+    # ranked = [{'username': 'karan', 'correct': 1, 'total_time': 1.726}, {'username': 'karan2', 'correct': 0, 'total_time': 0}]
     # print()
     return JsonResponse({'leaderboard': ranked})
 

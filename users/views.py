@@ -28,3 +28,9 @@ def login_view(request):
         else:
             messages.error(request, 'Invalid username or password.')
     return render(request, 'users/login.html')
+
+
+def logout_view(request):
+    logout(request)
+    messages.success(request, 'You have been logged out successfully.')
+    return redirect('home') 
