@@ -17,6 +17,7 @@ urlpatterns = [
     path('api/quiz_status/<int:session_id>/', views.quiz_status_api, name='quiz_status_api'),
     path('submit_answer/', views.submit_answer, name='submit_answer'),
     path('institution_dashboard/<int:session_id>/', views.institution_dashboard, name='institution_dashboard'),
+    path('is_session_active/<int:session_id>/', views.is_session_active, name='is_session_active'),
     path('api/leaderboard/<int:session_id>/', views.leaderboard_api, name='leaderboard_api'),
 
     path('start_live_quiz', views.start_live_quiz, name='start_live_quiz'),

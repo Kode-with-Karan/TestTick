@@ -81,5 +81,29 @@
 
     window.onload = typeLoop;
 
+    function is_active(){
+        console.log()
+
+    }
+
+    function checkUrl(url) {
+    fetch(url, { method: 'GET', mode: 'no-cors' })  // Only request headers (faster)
+        .then(response => {
+            if (response.ok) {
+                console.log(response);
+            } else {
+                console.log("URL is not working ❌");
+            }
+        })
+        .catch(error => {
+            console.log("URL is not working ❌");
+            console.error(error);
+        });
+}
+
+
+is_active();
+// Example usage:
+checkUrl(window.location.origin+'/quiz/is_session_active/'+(window.location.href).split("/")[5]);
 </script>
 {% endblock %}

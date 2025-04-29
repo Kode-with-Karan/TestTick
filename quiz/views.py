@@ -303,6 +303,8 @@ def student_quiz(request, session_id):
 
     if QuizSession.objects.filter(session_id = session_id):
         return render(request, 'quiz/student_quiz.html', {'session_id': session_id})
+    
+
 
     return render(request, 'quiz/quiz_unavailale.html', {'session_id': session_id})
      
@@ -413,8 +415,6 @@ def leaderboard_api(request, session_id):
     # print()
     return JsonResponse({'leaderboard': ranked})
 
-from django.db.models import Max
-
 def start_live_quiz(request):
     quizzes = Quiz.objects.all()
 
@@ -430,3 +430,8 @@ def start_live_quiz(request):
     # number = match.group(1) if match else None
 
     return render(request, 'quiz/start_live_quiz.html', {'quizzes': quizzes, 'session_id': int(last_quiz_session.id)+1 })
+
+def is_session_active(request, session_id):
+
+    return JsonResponse({'is_active': (QuizSession.objects.filter(id=session_id).exists())})
+    
