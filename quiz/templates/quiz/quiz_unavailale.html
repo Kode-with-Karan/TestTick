@@ -36,12 +36,13 @@
     }
 </style>
 
-<h1 style="text-align: center;">Quiz not Started ...</h1>
+<h1 style="text-align: center;">Quiz not Started Yet...</h1>
 <a style="margin: auto;width: fit-content;display: block;" href="{{ request.path }}">Refresh</a>
 
 <div class="typing-container">
-    
-    <h1 class="text-primary">Test<span class="text-dark">Tick is </span></h1> &nbsp;&nbsp; <h1> <span id="typing-text"></span><span class="cursor"></span> by Karan ❤️</h1>
+
+    <h1 class="text-primary">Test<span class="text-dark">Tick is </span></h1> &nbsp;&nbsp; <h1> <span
+            id="typing-text"></span><span class="cursor"></span> by Karan ❤️</h1>
 </div>
 
 
@@ -81,29 +82,46 @@
 
     window.onload = typeLoop;
 
-    function is_active(){
-        console.log()
+    function checkUrl() {
+        const sessionId = window.location.href.split("/")[5];
+        const url = `${window.location.origin}/quiz/is_session_active/${sessionId}/`;
 
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.is_active); // Will log true or false
+                if (data.is_active === true) {
+                    console.log("yess")
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching session status:', error);
+            });
     }
 
-    function checkUrl(url) {
-    fetch(url, { method: 'GET', mode: 'no-cors' })  // Only request headers (faster)
-        .then(response => {
-            if (response.ok) {
-                console.log(response);
-            } else {
-                console.log("URL is not working ❌");
-            }
-        })
-        .catch(error => {
-            console.log("URL is not working ❌");
-            console.error(error);
-        });
-}
+    // Run checkUrl every 1000 ms (1 second)
+    setInterval(checkUrl, 1000);
 
 
-is_active();
-// Example usage:
-checkUrl(window.location.origin+'/quiz/is_session_active/'+(window.location.href).split("/")[5]);
+    // function checkUrl(url) {
+    //     fetch(url)
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             console.log(data); // Will log true or false
+    //             if (data === true) {
+    //                 location.reload();
+    //             } else {
+    //                 // Session is inactive
+    //             }
+    //         })
+    //         .catch(error => {
+    //             console.error('Error fetching session status:', error);
+    //         });
+
+    // }
+
+
+    // setTimeout(checkUrl(window.location.origin + '/quiz/is_session_active/' + (window.location.href).split("/")[5]), 1000);
 </script>
 {% endblock %}
