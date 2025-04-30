@@ -150,6 +150,35 @@
     const totalForms = document.querySelector("#id_quiz_questions-TOTAL_FORMS");
 
     addBtn.addEventListener("click", () => {
+        const currentFormCount = parseInt(totalForms.value);
+        const formCopyTarget = document.querySelector(".question-form");
+        const newForm = formCopyTarget.cloneNode(true);
+
+        // Update names and ids in cloned form
+        const regex = new RegExp(`quiz_questions-(\\d+)-`, 'g');
+        newForm.innerHTML = newForm.innerHTML.replace(regex, `quiz_questions-${currentFormCount}-`);
+
+        // Clear the values from inputs and textareas
+        const inputs = newForm.querySelectorAll("input, textarea, select");
+        inputs.forEach(input => {
+            if (input.type === "checkbox" || input.type === "radio") {
+                input.checked = false;
+            } else {
+                input.value = "";
+            }
+        });
+
+        formsetDiv.appendChild(newForm);
+        totalForms.value = currentFormCount + 1;
+    });
+</script>
+
+<!-- <script>
+    const addBtn = document.getElementById("add-question");
+    const formsetDiv = document.getElementById("question-formset");
+    const totalForms = document.querySelector("#id_quiz_questions-TOTAL_FORMS");
+
+    addBtn.addEventListener("click", () => {
         console.log("Hello")
         const currentFormCount = parseInt(totalForms.value);
         const formCopyTarget = document.querySelector(".question-form");
@@ -163,7 +192,7 @@
         formsetDiv.appendChild(newForm);
         totalForms.value = currentFormCount + 1;
     });
-</script>
+</script> -->
 
 
 <!--
