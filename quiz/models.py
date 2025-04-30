@@ -125,3 +125,13 @@ class StudentAnswer(models.Model):
     selected_option = models.CharField(max_length=1)
     is_correct = models.BooleanField()
     time_taken = models.FloatField()  # in seconds
+
+
+class StudentParticipation(models.Model):
+    student = models.ForeignKey(User, on_delete=models.CASCADE)
+    joined_at = models.DateTimeField(auto_now_add=True)
+    session = models.IntegerField(default=0)
+    score = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.student.username} in session {self.session}"

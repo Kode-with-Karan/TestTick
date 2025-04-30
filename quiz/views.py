@@ -7,12 +7,13 @@ from django.utils import timezone
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 import os
-from .models import UploadedFile, Quiz, Quiz_Question, QuizSession, StudentAnswer, StudentQuiz, Quiz_UserAnswer, UsersAnswer
+from .models import UploadedFile, Quiz, Quiz_Question, QuizSession, StudentAnswer, StudentQuiz, Quiz_UserAnswer, UsersAnswer, StudentParticipation
 from .forms import UploadQuizFileForm, QuizForm, QuizQuestionFormSet, PasscodeForm
 from .utils import parse_word_file, parse_excel_file
 from institutions.models import Institution  
 from results.models import TestSummary
 from users.models import User
+from django.utils.timezone import now
 
 
 def quiz_code(request):
@@ -300,6 +301,13 @@ def start_quiz(request, quiz_id):
 
 # Student joins the quiz
 def student_quiz(request, session_id):
+    print(session_id)
+    print(request.user)
+    StudentParticipation.objects.get_or_create(
+        session=int(session_id),
+        student=request.user,
+        defaults={'joined_at': now()}
+    )
 
     if QuizSession.objects.filter(session_id = session_id):
         return render(request, 'quiz/student_quiz.html', {'session_id': session_id})
@@ -423,13 +431,24 @@ def start_live_quiz(request):
     print(last_quiz_session.id)
 
     
-    # text = str(quiz_session)
-    
-    # import re
-    # match = re.search(r'\((\d+)\)', text)
-    # number = match.group(1) if match else None
 
-    return render(request, 'quiz/start_live_quiz.html', {'quizzes': quizzes, 'session_id': int(last_quiz_session.id)+1 })
+
+    return render(request, 'quiz/start_live_quiz.html', {'quizzes': quizzes, 'session_id': int(last_quiz_session.id)+1})
+
+def show_student(request):
+    quizzes = Quiz.objects.all()
+
+    last_quiz_session = QuizSession.objects.latest('id')
+    # quiz_session = last_quiz_session.id
+    print(last_quiz_session.id)
+
+    participants = StudentParticipation.objects.filter(session=int(last_quiz_session.id)+1).select_related('student')
+    print(participants)
+
+    
+
+
+    return render(request, 'quiz/start_live_quiz.html', {'quizzes': quizzes, 'session_id': int(last_quiz_session.id)+1})
 
 def is_session_active(request, session_id):
 

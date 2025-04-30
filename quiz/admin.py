@@ -1,7 +1,7 @@
 
 # quiz/admin.py
 from django.contrib import admin
-from .models import Quiz, Question, Option, StudentQuiz, UploadedFile, UserAnswer, Quiz_Question, Quiz_UserAnswer, UsersAnswer,StudentAnswer,QuizSession
+from .models import Quiz, Question, Option, StudentQuiz, UploadedFile, UserAnswer, Quiz_Question, Quiz_UserAnswer, UsersAnswer,StudentAnswer,QuizSession, StudentParticipation
 
 class QuizQuestionInline(admin.TabularInline):  # or admin.StackedInline
     model = Quiz_Question
@@ -27,5 +27,6 @@ admin.site.register(UserAnswer)
 admin.site.register(UploadedFile)
 admin.site.register(Quiz_Question)
 admin.site.register(StudentAnswer)
+admin.site.register(StudentParticipation)
 admin.site.register(QuizSession)
 
