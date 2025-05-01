@@ -12,7 +12,13 @@
     }
 </style>
 
-
+{% for note in notifications %}
+  <div class="alert alert-info">
+    {{ note.message }} - {{ note.created_at|naturaltime }}
+  </div>
+{% empty %}
+  <p>No notifications.</p>
+{% endfor %}
 
 <form method="post">
     {% csrf_token %}
