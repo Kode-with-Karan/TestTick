@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
+
 {% block content %}
+
 
 <style>
     .data ,.data_s{
@@ -22,7 +24,7 @@
     <li style="display: flex;justify-content: space-between;margin: 20px;">
         <a href="{% url 'quiz_detail' quiz.pk %}">{{ quiz.title }}</a> 
         <button class=" btn btn-primary btn-md-rectangle me-4 d-lg-inline-flex makeitlive" id='{% if quiz.id|stringformat:"s"|length == 1 %}0{{quiz.id}}{% else %}{{quiz.id}}{% endif %}{% if quiz.created_by.id|stringformat:"s"|length == 1 %}0{{quiz.created_by.id}}{% else %}{{quiz.created_by.id}}{% endif %}{% if quiz.institution.id|stringformat:"s"|length == 1 %}0{{quiz.institution.id}}{% else %}{{quiz.institution.id}}{% endif %}'> 
-        Make it Live
+        <a href="{% url 'show_live_quiz_student' session_id quiz.id %}" style="color: black;">Make it Live</a> 
         <span class="data ">{{quiz.id}}</span>
         <span class="data_s">{{session_id}}</span>
     </button></li>

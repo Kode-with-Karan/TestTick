@@ -10,9 +10,9 @@ import os
 from .models import UploadedFile, Quiz, Quiz_Question, QuizSession, StudentAnswer, StudentQuiz, Quiz_UserAnswer, UsersAnswer, StudentParticipation
 from .forms import UploadQuizFileForm, QuizForm, QuizQuestionFormSet, PasscodeForm
 from .utils import parse_word_file, parse_excel_file
-from institutions.models import Institution  
+from institutions.models import Institution, Student
 from results.models import TestSummary
-from users.models import User
+from users.models import User, Notification
 from django.utils.timezone import now
 
 
@@ -33,8 +33,11 @@ def quiz_code(request):
             print(user)
             quiz = get_object_or_404(Quiz, pk=split_code[0], institution=institution, created_by= user)
             return redirect('solve_quiz', pk=quiz.pk)
+        
+    notifications = Notification.objects.filter(user=request.user, read=False).order_by('-created_at')
 
-    return render(request, 'quiz/enter_passcode.html', {'form': form, 'error': error})
+
+    return render(request, 'quiz/enter_passcode.html', {'form': form, 'error': error, 'notifications': notifications})
 
 
 def get_default_institution(user):
@@ -435,20 +438,42 @@ def start_live_quiz(request):
 
     return render(request, 'quiz/start_live_quiz.html', {'quizzes': quizzes, 'session_id': int(last_quiz_session.id)+1})
 
-def show_student(request):
-    quizzes = Quiz.objects.all()
+def show_live_quiz_student(request, session_id, quiz_id):
+    # quizzes = Quiz.objects.all()
 
-    last_quiz_session = QuizSession.objects.latest('id')
-    # quiz_session = last_quiz_session.id
-    print(last_quiz_session.id)
+    # last_quiz_session = QuizSession.objects.latest('id')
+    # # quiz_session = last_quiz_session.id
+    # print(last_quiz_session.id)
 
-    participants = StudentParticipation.objects.filter(session=int(last_quiz_session.id)+1).select_related('student')
+     # Send notification to all students of the institution
+    quiz = Quiz.objects.get(id=quiz_id)
+    institution = quiz.institution
+    students = Student.objects.filter(institution=institution).select_related('user')
+
+    # Only notify once per session (to avoid duplicates)
+    # if not request.session.get(f"notified_quiz_{quiz_id}", False):
+    print("notification")
+    print(students)
+    for student in students:
+        Notification.objects.create(
+            user=student.user,
+            message=f"A new live quiz \"{quiz.title}\" has started! Join now."
+        )
+        # request.session[f"notified_quiz_{quiz_id}"] = True
+
+    participants = StudentParticipation.objects.filter(session=int(session_id)).select_related('student')
     print(participants)
 
     
 
 
-    return render(request, 'quiz/start_live_quiz.html', {'quizzes': quizzes, 'session_id': int(last_quiz_session.id)+1})
+    return render(request, 'quiz/live_quiz_Students.html', {'quiz_id':quiz_id, 'participants': participants, 'session_id': int(session_id)})
+
+
+def get_participants_ajax(request, session_id):
+    participants = StudentParticipation.objects.filter(session=session_id).select_related('student')
+    data = [{'username': str(p.student)} for p in participants]
+    return JsonResponse({'participants': data})
 
 def is_session_active(request, session_id):
 

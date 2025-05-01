@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    .data ,.data_s{
+        display: none;
+    }
+    .pop-up{
+        display: none;
+
+    }
+    .content{
+        background-color: white;
+        width: 30%;
+    }
+    .participants{
+        width: 80%;
+        margin: 20px auto;
+        display: flex;
+        flex-wrap: wrap;
+        align-content: center;
+        
+        justify-content: center;
+    }
+    .username{
+        margin: 5px;
+    }
+    #link, #start{
+        text-align: center;
+        display: block;
+        margin: 5px auto;
+        width: fit-content;
+    }
+    #start{
+        color: #000;
+        background-color: #d4a662a3;
+        border-color: #d4a762;
+        border-radius: 5px;
+        padding: 5px 15px;
+    }
+</style>
+
+
+<h2 style="text-align: center;">Live Quiz</h2>
+<a id="link" target="_blank"></a>
+<a id="start" target="_blank"> Start</a>
+
+<div class="participants">
+
+    {% for participant in participants %}
+    <div class=" username btn btn-primary py-2 px-4 d-xl-inline-block">{{participant.student}}</div>
+    {% endfor %}
+</div>
+<!-- <ul>
+  {% for quiz in quizzes %}
+    <li style="display: flex;justify-content: space-between;margin: 20px;">
+        <a href="{% url 'quiz_detail' quiz.pk %}">{{ quiz.title }}</a> 
+        <button class=" btn btn-primary btn-md-rectangle me-4 d-lg-inline-flex makeitlive" id='{% if quiz.id|stringformat:"s"|length == 1 %}0{{quiz.id}}{% else %}{{quiz.id}}{% endif %}{% if quiz.created_by.id|stringformat:"s"|length == 1 %}0{{quiz.created_by.id}}{% else %}{{quiz.created_by.id}}{% endif %}{% if quiz.institution.id|stringformat:"s"|length == 1 %}0{{quiz.institution.id}}{% else %}{{quiz.institution.id}}{% endif %}'> 
+        Make it Live
+        <span class="data ">{{quiz.id}}</span>
+        <span class="data_s">{{session_id}}</span>
+    </button></li>
+  {% endfor %}
+</ul> -->
+
+
+
+
+<script>
+
+    let link = document.getElementById('link');
+    let start = document.getElementById('start');
+
+    link.href = link.innerHTML =window.location.origin+'/quiz/join_quiz/'+{{session_id}}
+    start.href= window.location.origin+'/quiz/start_quiz/'+{{session_id}}
+
+
+
+    // let button = document.getElementsByClassName('makeitlive')
+    // let pop_up = document.getElementsByClassName('pop-up')[0]
+    // let link = document.getElementById('link');
+    // let start = document.getElementById('start');
+
+    // Array.from(button).forEach(element => {
+    // element.addEventListener("click", () => {
+    //     quiz_id = element.getElementsByClassName("data")[0].innerHTML;
+    //     session_id = element.getElementsByClassName("data_s")[0].innerHTML;
+    //     // pop_up.style.display = 'block';
+    //     link.href = link.innerHTML =window.location.origin+'/quiz/join_quiz/'+session_id
+    //     start.href= window.location.origin+'/quiz/start_quiz/'+quiz_id
+    //     showPopup();
+
+    // });
+
+    // start.addEventListener("click", function () {
+    //     setTimeout(function () {
+    //         location.reload();
+    //     }, 1000); // Wait 1000ms (1 second) before reloading
+    // });
+
+    
+// });
+</script>
+<script>
+    const sessionId = {{ session_id }};
+    const participantContainer = document.querySelector('.participants');
+
+    function updateParticipants() {
+        fetch(`/quiz/get_participants/${sessionId}/`)
+            .then(response => response.json())
+            .then(data => {
+                participantContainer.innerHTML = ''; // Clear current list
+                data.participants.forEach(participant => {
+                    const div = document.createElement('div');
+                    div.className = "username btn btn-primary py-2 px-4 d-xl-inline-block";
+                    div.innerText = participant.username;
+                    participantContainer.appendChild(div);
+                });
+            });
+    }
+
+    // Call every 3 seconds
+    setInterval(updateParticipants, 1000);
+
+    // Initial load
+    updateParticipants();
+</script>
+
+{% endblock %}

@@ -21,5 +21,7 @@ urlpatterns = [
     path('api/leaderboard/<int:session_id>/', views.leaderboard_api, name='leaderboard_api'),
 
     path('start_live_quiz', views.start_live_quiz, name='start_live_quiz'),
-    
+    path('show_live_quiz_student/<int:session_id>/<int:quiz_id>', views.show_live_quiz_student, name='show_live_quiz_student'),
+    path('get_participants/<int:session_id>/', views.get_participants_ajax, name='get_participants_ajax'),
+
 ]

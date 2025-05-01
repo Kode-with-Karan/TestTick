@@ -34,3 +34,13 @@ class RegisteredUser(models.Model):
 
     def __str__(self):
         return self.username
+    
+
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    read = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"To {self.user.username}: {self.message[:50]}"
