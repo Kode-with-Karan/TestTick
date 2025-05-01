@@ -457,7 +457,7 @@ def show_live_quiz_student(request, session_id, quiz_id):
     for student in students:
         Notification.objects.create(
             user=student.user,
-            message=f"A new live quiz \"{quiz.title}\" has started! Join now."
+            message=f"{session_id}"
         )
         # request.session[f"notified_quiz_{quiz_id}"] = True
 

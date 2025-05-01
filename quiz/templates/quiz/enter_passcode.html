@@ -14,7 +14,7 @@
 
 {% for note in notifications %}
   <div class="alert alert-info">
-    {{ note.message }} - {{ note.created_at|naturaltime }}
+    A new live quiz has started! https://testtick.pythonanywhere.com/quiz/join_quiz/{{ note.message }} - {{ note.created_at|naturaltime }}
   </div>
 {% empty %}
   <p>No notifications.</p>
