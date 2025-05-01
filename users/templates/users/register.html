@@ -1,12 +1,79 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  
-  <form method="post" enctype="multipart/form-data" class="p-5 bg-light rounded contact-form" style="width: fit-content;margin: 50px auto;">
-    <h2 style="text-align: center;">Register</h2>
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class=" btn btn-primary btn-md-rectangle d-lg-inline-flex py-2 px-4">Register</button>
-    
-  </form>
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form.username.label }}: {{ form.username }}<br>
+  {{ form.email.label }}: {{ form.email }}<br>
+  {{ form.role.label }}: {{ form.role }}<br>
+  {{ form.profile_image.label }}: {{ form.profile_image }}<br>
+
+  <div id="institution_fields" style="display: none;">
+      {{ form.institution_name.label }}: {{ form.institution_name }}<br>
+      {{ form.institution_type.label }}: {{ form.institution_type }}<br>
+  </div>
+
+  <div id="student_fields" style="display: none;">
+      {{ form.select_institution.label }}: {{ form.select_institution }}<br>
+  </div>
+
+  {{ form.password1.label }}: {{ form.password1 }}<br>
+  {{ form.password2.label }}: {{ form.password2 }}<br>
+
+  <button type="submit">Register</button>
+</form>
+
+<script>
+  const roleField = document.getElementById("id_role");
+  const institutionFields = document.getElementById("institution_fields");
+  const studentFields = document.getElementById("student_fields");
+
+  function toggleFields() {
+      if (roleField.value === "institution") {
+          institutionFields.style.display = "block";
+          studentFields.style.display = "none";
+      } else if (roleField.value === "student") {
+          institutionFields.style.display = "none";
+          studentFields.style.display = "block";
+      } else {
+          institutionFields.style.display = "none";
+          studentFields.style.display = "none";
+      }
+  }
+
+  roleField.addEventListener("change", toggleFields);
+  window.addEventListener("load", toggleFields);
+</script>
+
+<!-- <form method="post" enctype="multipart/form-data" class="p-5 bg-light rounded contact-form"
+  style="width: fit-content;margin: 50px auto;">
+  <h2 style="text-align: center;">Register</h2>
+  {% csrf_token %}
+  {{ form.as_p }}
+  <select id="id_role" name="role">
+    <option value="student">Student</option>
+    <option value="institution">Institution</option>
+  </select>
+
+  <div id="institution-fields" style="display:none;">
+    {{ form.institution_name }}
+    {{ form.institution_type }}
+  </div>
+
+  <div id="student-fields" style="display:none;">
+    {{ form.select_institution }}
+  </div>
+
+  <script>
+    document.getElementById('id_role').addEventListener('change', function () {
+      const role = this.value;
+      document.getElementById('institution-fields').style.display = role === 'institution' ? 'block' : 'none';
+      document.getElementById('student-fields').style.display = role === 'student' ? 'block' : 'none';
+    });
+  </script>
+
+  <button type="submit" class=" btn btn-primary btn-md-rectangle d-lg-inline-flex py-2 px-4">Register</button>
+
+</form> -->
 {% endblock %}

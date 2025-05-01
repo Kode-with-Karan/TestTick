@@ -1,6 +1,6 @@
 # institutions/admin.py
 from django.contrib import admin
-from .models import Institution
+from .models import Institution, Student
 
 @admin.register(Institution)
 class InstitutionAdmin(admin.ModelAdmin):
@@ -8,3 +8,4 @@ class InstitutionAdmin(admin.ModelAdmin):
     search_fields = ('name', 'user__username')
     list_filter = ('institution_type',)
 
+admin.site.register(Student)
