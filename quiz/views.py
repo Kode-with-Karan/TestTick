@@ -34,10 +34,10 @@ def quiz_code(request):
             quiz = get_object_or_404(Quiz, pk=split_code[0], institution=institution, created_by= user)
             return redirect('solve_quiz', pk=quiz.pk)
         
-    notifications = Notification.objects.filter(user=request.user, read=False).order_by('-created_at')
+    
 
 
-    return render(request, 'quiz/enter_passcode.html', {'form': form, 'error': error, 'notifications': notifications})
+    return render(request, 'quiz/enter_passcode.html', {'form': form, 'error': error})
 
 
 def get_default_institution(user):
@@ -452,8 +452,6 @@ def show_live_quiz_student(request, session_id, quiz_id):
 
     # Only notify once per session (to avoid duplicates)
     # if not request.session.get(f"notified_quiz_{quiz_id}", False):
-    print("notification")
-    print(students)
     for student in students:
         Notification.objects.create(
             user=student.user,

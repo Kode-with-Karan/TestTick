@@ -36,14 +36,15 @@ urlpatterns = [
 
     path('admin/', admin.site.urls),
 
-    path('', TemplateView.as_view(template_name="pages/home.html"), name='home'),
-    path('about/', TemplateView.as_view(template_name="pages/about.html"), name='about'),
-    path('contact/', TemplateView.as_view(template_name="pages/contact.html"), name='contact'),
-    path('event/', TemplateView.as_view(template_name="pages/event.html"), name='event'),
-    path('menu/', TemplateView.as_view(template_name="pages/menu.html"), name='menu'),
-    path('service/', TemplateView.as_view(template_name="pages/service.html"), name='service'),
+    
+    # path('about/', TemplateView.as_view(template_name="pages/about.html"), name='about'),
+    # path('contact/', TemplateView.as_view(template_name="pages/contact.html"), name='contact'),
+    # path('event/', TemplateView.as_view(template_name="pages/event.html"), name='event'),
+    # path('menu/', TemplateView.as_view(template_name="pages/menu.html"), name='menu'),
+    # path('service/', TemplateView.as_view(template_name="pages/service.html"), name='service'),
 
     # App URLs
+    path('', include('pages.urls')),
     path('users/', include('users.urls')),
     path('quiz/', include('quiz.urls')),
     path('results/', include('results.urls')),

@@ -6,6 +6,38 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .models import RegisteredUser
 from institutions.models import Institution
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from .models import Notification
+
+def get_unread_notifications(request):
+    if request.user.is_authenticated:
+        notifications = Notification.objects.filter(user=request.user, read=False).order_by('-created_at')
+        data = [
+            {
+                'id': n.id,
+                'message': n.message,
+                'created_at': n.created_at.strftime('%Y-%m-%d %H:%M:%S')
+            } for n in notifications
+        ]
+        return JsonResponse({'notifications': data})
+    return JsonResponse({'notifications': []})
+
+@csrf_exempt
+def mark_notification_read(request, notification_id):
+    print(notification_id)
+    if request.method == "POST":
+        try:
+            notification = Notification.objects.get(id=notification_id, user=request.user)
+            notification.read = True
+            notification.save()
+            print("ho gai",notification_id)
+            return JsonResponse({"status": "success"})
+        except Notification.DoesNotExist:
+            print("nahi hui",notification_id)
+            return JsonResponse({"status": "error", "message": "Not found"}, status=404)
+    print("nahi hui",notification_id)
+    return JsonResponse({"status": "error", "message": "Invalid request"}, status=400)
 
 # def register(request):
 #     if request.method == 'POST':

@@ -12,13 +12,7 @@
     }
 </style>
 
-{% for note in notifications %}
-  <div class="alert alert-info">
-    A new live quiz has started! https://testtick.pythonanywhere.com/quiz/join_quiz/{{ note.message }} - {{ note.created_at|naturaltime }}
-  </div>
-{% empty %}
-  <p>No notifications.</p>
-{% endfor %}
+
 
 <form method="post">
     {% csrf_token %}
