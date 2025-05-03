@@ -3,9 +3,13 @@ from django.shortcuts import render
 from users.models import User
 from institutions.models import Institution
 from django.contrib.auth.decorators import login_required
+from results.models import TestSummary
 
 def student_dashboard(request):
-    return render(request, 'dashboard/student_dashboard.html')
+
+    testSummary = TestSummary.objects.filter(user = request.user)
+
+    return render(request, 'dashboard/student_dashboard.html', {'testSummary': testSummary})
 
 @login_required
 def institution_dashboard(request):
