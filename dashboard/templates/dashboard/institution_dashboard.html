@@ -374,7 +374,7 @@
           </div>
         </div>
         <div class="card-body px-0 pb-2">
-          <div class="table-responsive">
+          <div class="table-responsive" style="overflow: auto;height: 240px;">
             <table class="table align-items-center mb-0">
               <thead>
                 <tr>
@@ -679,7 +679,7 @@
           </p>
         </div>
         <div class="card-body p-3">
-          <div class="timeline timeline-one-side" style="overflow: hidden;">
+          <div class="timeline timeline-one-side" style="overflow: auto;height: 223px;">
             {% for quiz in quizzies %}
             <div class="timeline-block mb-3 student-row" data-id="{{ request.id }}">
               <span class="timeline-step">
