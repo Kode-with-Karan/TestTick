@@ -3,9 +3,12 @@ from users.models import Notification
 
 
 def home(request):
-    notifications = Notification.objects.filter(user=request.user, read=False).order_by('-created_at')
-    print(notifications)
+    notifications = ""
+    try:
+        notifications = Notification.objects.filter(user=request.user, read=False).order_by('-created_at')
 
+    except Exception as e:
+        print(e)
     return render(request, 'pages/home.html',{'notifications': notifications})
 
 def about(request):

@@ -8,9 +8,18 @@ from users.models import Notification
 
 def student_dashboard(request):
 
-    testSummary = TestSummary.objects.filter(user = request.user)
-    notifications = Notification.objects.filter(user = request.user)
-    unread_count = notifications.filter(read=False).count()
+    testSummary = ""
+    notifications = ""
+    unread_count = ""
+
+    try:
+
+        testSummary = TestSummary.objects.filter(user = request.user)
+        notifications = Notification.objects.filter(user = request.user)
+        unread_count = notifications.filter(read=False).count()
+    
+    except Exception as e:
+        print(e)
 
     return render(request, 'dashboard/student_dashboard.html', {'testSummary': testSummary, 'notifications': notifications, 'unread_count':unread_count})
 
