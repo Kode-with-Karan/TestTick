@@ -294,6 +294,10 @@ def start_quiz(request, quiz_id):
     session_id = int(last_quiz_session.id)+1
 
 
+    print(quiz_id)
+    print(session_id)
+    print(timezone.now())
+
     session = QuizSession.objects.create(
         quiz_id=quiz_id,
         session_id = session_id,
