@@ -7,6 +7,7 @@ from institutions.models import Institution, Student
 from django.contrib.auth.decorators import login_required
 from results.models import TestSummary
 from users.models import Notification
+from quiz.models import Quiz,QuizSession
 from django.db.models import Avg
 
 
@@ -47,7 +48,7 @@ def remove_student(request, student_id):
 def institution_dashboard(request):
     institution =Institution.objects.filter(user=request.user).first()
     students = Student.objects.filter(institution=institution, is_approved = True)
-    # testSummaries = TestSummary.objects.filter(institution=institution)
+    quizzies = Quiz.objects.filter(institution=institution)
     students_request = Student.objects.filter(institution=institution, is_approved = False, is_removed = False)
 
     for student in students:
@@ -72,5 +73,15 @@ def institution_dashboard(request):
             student.save()
 
 
-    return render(request, 'dashboard/institution_dashboard.html', {'institution': institution, 'students':students, 'students_request':students_request})
+    last_quiz_session = QuizSession.objects.latest('id')
+
+
+
+    return render(request, 'dashboard/institution_dashboard.html', 
+                  {'institution': institution, 
+                   'students':students, 
+                   'students_request':students_request,
+                   'quizzies':quizzies,
+                   'session_id': int(last_quiz_session.id)+1
+                   })
 
