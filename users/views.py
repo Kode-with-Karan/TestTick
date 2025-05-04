@@ -120,7 +120,11 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('student_dashboard')  # or wherever you want after login
+            print(user.role)
+            if(user.role == 'institution'):
+                return redirect('institution_dashboard')  # or wherever you want after login
+            else:
+                return redirect('student_dashboard')
         else:
             messages.error(request, 'Invalid username or password.')
     return render(request, 'users/login.html')

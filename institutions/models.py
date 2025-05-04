@@ -28,6 +28,14 @@ class Institution(models.Model):
 class Student(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='student_profile')
     institution = models.ForeignKey('Institution', on_delete=models.CASCADE, related_name='students')
+    quiz_attempt = models.PositiveIntegerField(default=0)
+    avg_quiz_total = models.PositiveIntegerField(default=0)
+    avg_quiz_correct = models.PositiveIntegerField(default=0)
+    avg_quiz_score = models.PositiveIntegerField(default=0)
+    avg_quiz_persentage = models.FloatField(default=0.0)
+    is_approved = models.BooleanField(default=False)
+    is_removed = models.BooleanField(default=False)
+    last_quiz = models.DateTimeField()
     enrolled_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
