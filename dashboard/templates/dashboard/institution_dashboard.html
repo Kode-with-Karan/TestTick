@@ -8,8 +8,20 @@
 <!-- Font Awesome Icons -->
 <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
 <link id="pagestyle" href="{% static 'dashboard/css/soft-ui-dashboard.css' %}" rel="stylesheet" />
+
+<style>
+  .ck-editor__editable {
+  min-height: 120px !important;
+}
+</style>
+
 {% endblock link %}
+{% block js %}
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+
+{% endblock js %}
 {% block content %}
+
 
 <div class="container-fluid py-4">
   <div class="row my-4">
@@ -42,21 +54,10 @@
     </div>
     <div class="col-lg-5">
       <div class="card h-100 p-3">
-        <div class="overflow-hidden position-relative border-radius-lg bg-cover h-100"
-          style="background-image: url('../assets/img/ivancik.jpg');">
-          <span class="mask bg-gradient-dark"></span>
-          <div class="card-body position-relative z-index-1 d-flex flex-column h-100 p-3">
-            <h5 class="text-white font-weight-bolder mb-4 pt-2">Work with the rockets</h5>
-            <p class="text-white">Wealth creation is an evolutionarily recent positive-sum game. It is all about who
-              take the opportunity first.</p>
-            <a class="text-white text-sm font-weight-bold mb-0 icon-move-right mt-auto" href="javascript:;">
-              Read More
-              <i class="fas fa-arrow-right text-sm ms-1" aria-hidden="true"></i>
-            </a>
-          </div>
-        </div>
+        <textarea name="content" id="editor"></textarea>
       </div>
     </div>
+
   </div>
   <div class="row">
     <div class="col-lg-6 col-12">
@@ -282,70 +283,15 @@
                     class="btn btn-primary remove-btn py-2 px-4 d-xl-inline-block text-sm" style="margin: 0;">Remove</a>
                 </div>
                 <input type="checkbox" name="" id="" style="flex: 1">
-                <!-- <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">Read {% if noti.read %} <i
-                    class="fa fa-check text-success" aria-hidden="true"></i> {% else %} <i
-                    class="fa fa-times text-danger" aria-hidden="true"></i> {% endif %}</p> -->
               </div>
             </div>
             {% endfor %}
-            <!-- <div class="timeline-block mb-3">
-                    <span class="timeline-step">
-                      <i class="ni ni-bell-55 text-success text-gradient"></i>
-                    </span>
-                    <div class="timeline-content">
-                      <h6 class="text-dark text-sm font-weight-bold mb-0">$2400, Design changes</h6>
-                      <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">22 DEC 7:20 PM</p>
-                    </div>
-                  </div>
-                  <div class="timeline-block mb-3">
-                    <span class="timeline-step">
-                      <i class="ni ni-html5 text-danger text-gradient"></i>
-                    </span>
-                    <div class="timeline-content">
-                      <h6 class="text-dark text-sm font-weight-bold mb-0">New order #1832412</h6>
-                      <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">21 DEC 11 PM</p>
-                    </div>
-                  </div>
-                  <div class="timeline-block mb-3">
-                    <span class="timeline-step">
-                      <i class="ni ni-cart text-info text-gradient"></i>
-                    </span>
-                    <div class="timeline-content">
-                      <h6 class="text-dark text-sm font-weight-bold mb-0">Server payments for April</h6>
-                      <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">21 DEC 9:34 PM</p>
-                    </div>
-                  </div>
-                  <div class="timeline-block mb-3">
-                    <span class="timeline-step">
-                      <i class="ni ni-credit-card text-warning text-gradient"></i>
-                    </span>
-                    <div class="timeline-content">
-                      <h6 class="text-dark text-sm font-weight-bold mb-0">New card added for order #4395133</h6>
-                      <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">20 DEC 2:20 AM</p>
-                    </div>
-                  </div>
-                  <div class="timeline-block mb-3">
-                    <span class="timeline-step">
-                      <i class="ni ni-key-25 text-primary text-gradient"></i>
-                    </span>
-                    <div class="timeline-content">
-                      <h6 class="text-dark text-sm font-weight-bold mb-0">Unlock packages for development</h6>
-                      <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">18 DEC 4:54 AM</p>
-                    </div>
-                  </div>
-                  <div class="timeline-block">
-                    <span class="timeline-step">
-                      <i class="ni ni-money-coins text-dark text-gradient"></i>
-                    </span>
-                    <div class="timeline-content">
-                      <h6 class="text-dark text-sm font-weight-bold mb-0">New order #9583120</h6>
-                      <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">17 DEC</p>
-                    </div>
-                  </div> -->
+          
           </div>
         </div>
       </div>
     </div>
+
   </div>
   <div class="row my-4">
     <div class="col-lg-8 col-md-6 mb-md-0 mb-4">
@@ -930,6 +876,34 @@
 <script src="{% static 'dashboard/js/plugins/smooth-scrollbar.min.js' %}"></script>
 <script src="{% static 'dashboard/js/plugins/chartjs.min.js' %}"></script>
 
+
+<!-- <script>
+  ClassicEditor
+    .create(document.querySelector('#editor'))
+    .then(editor => {
+      // Set height using the editing view's root element
+      editor.editing.view.change(writer => {
+        writer.setStyle('min-height', '50%', editor.editing.view.document.getRoot());
+      });
+    })
+    .catch(error => {
+      console.error(error);
+    });
+</script> -->
+
+<script>
+  ClassicEditor
+    .create(document.querySelector('#editor'))
+    .catch(error => {
+      console.error(error);
+    });
+</script>
+<!-- <script>
+  CKEDITOR.replace('editor');
+  CKEDITOR.editorConfig = function( config ) {
+    config.versionCheck = false;
+};
+</script> -->
 
 <script>
   function getCookie(name) {
