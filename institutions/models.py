@@ -35,7 +35,7 @@ class Student(models.Model):
     avg_quiz_persentage = models.FloatField(default=0.0)
     is_approved = models.BooleanField(default=False)
     is_removed = models.BooleanField(default=False)
-    last_quiz = models.DateTimeField()
+    last_quiz = models.DateTimeField(null=True)
     enrolled_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
