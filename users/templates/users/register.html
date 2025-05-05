@@ -2,8 +2,10 @@
 
 {% block content %}
 
-<form method="post" enctype="multipart/form-data">
+<form method="post" enctype="multipart/form-data" class="p-5 bg-light rounded contact-form"
+  style="width: fit-content;margin: 50px auto;">
   {% csrf_token %}
+
   {{ form.username.label }}: {{ form.username }}<br>
   {{ form.email.label }}: {{ form.email }}<br>
   {{ form.role.label }}: {{ form.role }}<br>
@@ -21,7 +23,7 @@
   {{ form.password1.label }}: {{ form.password1 }}<br>
   {{ form.password2.label }}: {{ form.password2 }}<br>
 
-  <button type="submit">Register</button>
+  <button type="submit" class=" btn btn-primary btn-md-rectangle d-lg-inline-flex py-2 px-4" >Register</button>
 </form>
 
 <script>
