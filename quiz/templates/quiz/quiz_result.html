@@ -2,36 +2,103 @@
 {% load static %}
 {% block content %}
 
+
+<!-- <style>
+  .progress_container {
+    position: relative;
+    width: 200px;
+    height: 100px;
+    overflow: hidden;
+  }
+
+  .background-arc {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 10px solid #ccc;
+    border-bottom: none;
+    border-top-left-radius: 100px;
+    border-top-right-radius: 100px;
+    box-sizing: border-box;
+  }
+
+  .progress-arc {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 10px solid transparent;
+    border-top: 10px solid green;
+    border-radius: 100px 100px 0 0;
+    transform-origin: center bottom;
+    transform: rotate(0deg); /* This will be dynamically changed */
+    box-sizing: border-box;
+  }
+
+  .label {
+    text-align: center;
+    margin-top: 20px;
+    font-weight: bold;
+  }
+</style> -->
+
+<style>
+  .correct{
+    background: #0080008f !important;
+    color: white;
+  }
+  .wrong{
+    background: #f615158f !important;
+    color: white;
+  }
+  ul{
+    padding: 0;
+  }
+</style>
+
 <div class="container">
 
-  <div class="question-result">
+  <div class="">
 
     <h2>Quiz Result: {{ quiz.title }}</h2>
-    <p>Your Score: {{ score }}</p>
-    <p>Your users_answer: {{ users_answer }}</p>
-    <p>Your submitted_answers_count: {{ submitted_answers_count }}</p>
-    <p>Your total_questions: {{ total_questions }}</p>
-    <p>Your correct_answers: {{ correct_answers }}</p>
-    <p>Your wrong_answers: {{ wrong_answers }}</p>
-    <p>Your skipped_questions: {{ skipped_questions }}</p>
-    <p>Your percentage: {{ percentage }}</p>
-    <p>Your result_message: {{ result_message }}</p>
+<!-- 
+    <div class="progress_container">
+      <div class="background-arc"></div>
+      <div class="progress-arc" id="progressArc"></div>
+    </div>
+    <div class="label" id="progressLabel">20%</div>
+   -->
+    
+    <div>
+      <h3 style="font-weight: 400 !important;font-family: 'Playball', cursive !important;width: fit-content; margin: auto;">{{ result_message }}</h3>
+      <!-- <h4 style="font-weight: 400 !important;font-family: 'Playball', cursive !important;">Your Score: {{ score }}</h4> -->
+      <!-- <h4 style="font-weight: 400 !important;font-family: 'Playball', cursive !important;">Your percentage: {{ percentage }}</h4> -->
+    </div>
+    <div style="display: flex;justify-content: space-around; width: 90%;">
+      <!-- <div> -->
+        <h4 style="font-weight: 400 !important;font-family: 'Playball', cursive !important;">Your Attempted Questions: {{ submitted_answers_count }}</h4>
+        <h4 style="font-weight: 400 !important;font-family: 'Playball', cursive !important;">Total Questions: {{ total_questions }}</h4>
+      <!-- </div> -->
+    </div>
+
+      <!-- <p>Your correct_answers: {{ correct_answers }}</p>
+      <p>Your wrong_answers: {{ wrong_answers }}</p>
+      <p>Your skipped_questions: {{ skipped_questions }}</p> -->
 
     {% for ans in submitted_answers %}
-    <div class="question-result">
-      <p><strong><pre><code>Question : {{ ans.question }}</code></pre></strong></p>
+    <div class="question-result" class="p-5 bg-light rounded contact-form" style="margin: 50px;">
+      <p ><strong><pre ><code style="font-weight: 400 !important;font-family: 'Playball', cursive !important; font-size: 30px;">Question : {{ ans.question }}</code></pre></strong></p>
       <ul>
-        <li>A. {{ ans.options_A }}</li>
-        <li>B. {{ ans.options_B }}</li>
-        <li>C. {{ ans.options_C }}</li>
-        <li>D. {{ ans.options_D }}</li>
+        <li class="w-100 form-control p-3 border-primary bg-light" >A. {{ ans.options_A }}</li><br>
+        <li class="w-100 form-control p-3 border-primary bg-light" >B. {{ ans.options_B }}</li><br>
+        <li class="w-100 form-control p-3 border-primary bg-light" >C. {{ ans.options_C }}</li><br>
+        <li class="w-100 form-control p-3 border-primary bg-light" >D. {{ ans.options_D }}</li><br>
       </ul>
-      <p><strong>Your Answer:</strong> {{ ans.is_selected|title }}</p>
-      <p><strong>Correct Answer:</strong> {{ ans.is_correct|title }}</p>
+      <p style="display: none;"><strong>Your Answer:</strong> {{ ans.is_selected|title }}</p>
+      <p style="display: none;"><strong>Correct Answer:</strong> {{ ans.is_correct|title }}</p>
       {% if ans.is_correct == ans.is_selected %}
-      <p style="color: green;">Correct</p>
+      <p style="display: none;" style="color: green;">Correct</p>
       {% else %}
-      <p style="color: red;">Incorrect</p>
+      <p style="display: none;" style="color: red;">Incorrect</p>
       {% endif %}
     </div>
     {% endfor %}
@@ -40,5 +107,80 @@
 </div>
 
   </div>
+
+  <script>
+
+    questions_div = document.getElementsByClassName("question-result")
+
+    Array.from(questions_div).forEach((element) => {
+      // For example: get all <p> tags inside each .question-result div
+      const paragraphs = element.getElementsByTagName("p");
+      const options  = element.getElementsByTagName("li");
+
+      // console.log(options[0].classList.add("correct"))
+
+      // console.log(paragraphs[3].innerHTML.split("</strong> ")[1])
+      // console.log(paragraphs[4].innerHTML.split("</strong> ")[1])
+      // console.log(paragraphs[3].innerHTML)
+      if(paragraphs[2].innerHTML.split("</strong> ")[1] === paragraphs[3].innerHTML.split("</strong> ")[1]){
+        if(paragraphs[3].innerHTML.split("</strong> ")[1] === "Options_A"){
+          options[0].classList.add("correct")
+        }else if(paragraphs[3].innerHTML.split("</strong> ")[1] === "Options_B"){
+          options[1].classList.add("correct")
+        }else if(paragraphs[3].innerHTML.split("</strong> ")[1] === "Options_C"){
+          options[2].classList.add("correct")
+        }else if(paragraphs[3].innerHTML.split("</strong> ")[1] === "Options_D"){
+          options[3].classList.add("correct")
+        }
+      }else {
+        if(paragraphs[2].innerHTML.split("</strong> ")[1] === "Options_A"){
+          options[0].classList.add("wrong")
+        }else if(paragraphs[2].innerHTML.split("</strong> ")[1] === "Options_B"){
+          options[1].classList.add("wrong")
+        }else if(paragraphs[2].innerHTML.split("</strong> ")[1] === "Options_C"){
+          options[2].classList.add("wrong")
+        }else if(paragraphs[2].innerHTML.split("</strong> ")[1] === "Options_D"){
+          options[3].classList.add("wrong")
+        }
+
+        if(paragraphs[3].innerHTML.split("</strong> ")[1] === "Options_A"){
+          options[0].classList.add("correct")
+        }else if(paragraphs[3].innerHTML.split("</strong> ")[1] === "Options_B"){
+          options[1].classList.add("correct")
+        }else if(paragraphs[3].innerHTML.split("</strong> ")[1] === "Options_C"){
+          options[2].classList.add("correct")
+        }else if(paragraphs[3].innerHTML.split("</strong> ")[1] === "Options_D"){
+          options[3].classList.add("correct")
+        }
+      }
+
+
+      // else if(paragraphs[3].innerHTML.split("</strong> ")[1] === "Options_C"){
+      // }else if(paragraphs[3].innerHTML.split("</strong> ")[1] === "Options_D"){
+      // }
+      // const paragraphs = element.getElementsByTagName("p");
+
+      // Array.from(paragraphs).forEach((p) => {
+      //   console.log(p.textContent);
+      // });
+    });
+
+    // Array.from(questions_div).forEach((element)=>{
+      
+    //   console.log(element)
+    // })
+
+  </script>
+
+  <!-- <script>
+    function setProgress(percent) {
+      const angle = (percent / 100) * 180; // Map 0–100% to 0–180 degrees
+      document.getElementById("progressArc").style.transform = `rotate(${angle}deg)`;
+      document.getElementById("progressLabel").innerText = `${percent}%`;
+    }
+  
+    // Example usage:
+    setProgress(0); // Change this to set different percentages
+  </script> -->
 
   {% endblock %}
