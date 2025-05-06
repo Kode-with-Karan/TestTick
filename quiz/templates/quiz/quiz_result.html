@@ -2,44 +2,55 @@
 {% load static %}
 {% block content %}
 
-
-<!-- <style>
-  .progress_container {
-    position: relative;
+<style>
+  .progress-wheel-wrapper {
     width: 200px;
     height: 100px;
     overflow: hidden;
+    position: relative;
+    margin: 40px auto;
   }
 
-  .background-arc {
-    position: absolute;
+  .pw-body {
     width: 100%;
-    height: 100%;
-    border: 10px solid #ccc;
-    border-bottom: none;
-    border-top-left-radius: 100px;
-    border-top-right-radius: 100px;
-    box-sizing: border-box;
+    height: 200px;
+    border-radius: 50% 50% 0 0;
+    background: #ddd;
+    position: relative;
   }
 
-  .progress-arc {
-    position: absolute;
+  .pw-circle {
     width: 100%;
-    height: 100%;
-    border: 10px solid transparent;
-    border-top: 10px solid green;
-    border-radius: 100px 100px 0 0;
+    height: 200px;
+    border-radius: 50% 50% 0 0;
+    background: conic-gradient(
+      #4caf50 0deg,
+      #4caf50 180deg,
+      #ddd 180deg,
+      #ddd 360deg
+    );
     transform-origin: center bottom;
-    transform: rotate(0deg); /* This will be dynamically changed */
-    box-sizing: border-box;
+    transform: rotate(180deg); /* initial */
+    transition: transform 0.3s ease;
   }
 
-  .label {
-    text-align: center;
-    margin-top: 20px;
-    font-weight: bold;
+  .pw-circle-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
-</style> -->
+
+  .pw-value-label {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #333;
+  }
+</style>
 
 <style>
   .correct{
@@ -76,13 +87,17 @@
   <div class="">
 
     <h2>Quiz Result: {{ quiz.title }}</h2>
-<!-- 
-    <div class="progress_container">
-      <div class="background-arc"></div>
-      <div class="progress-arc" id="progressArc"></div>
-    </div>
-    <div class="label" id="progressLabel">20%</div>
-   -->
+    <h1 style="width: fit-content; margin: auto;">{{ percentage }}%</h1>
+    <!-- <div class="progress-wheel-wrapper">
+      <div class="pw-body">
+        <div class="pw-circle" id="progressWheelCircle"></div>
+        <div class="pw-circle-overlay">
+          <div class="pw-value-label" id="progressWheelLabel">0%</div>
+        </div>
+      </div>
+    </div> -->
+  </div>
+    
     
     <div>
       <h3 style="font-weight: 400 !important;font-family: 'Playball', cursive !important;width: fit-content; margin: auto;">{{ result_message }}</h3>
@@ -188,15 +203,25 @@
 
   </script>
 
-  <!-- <script>
-    function setProgress(percent) {
-      const angle = (percent / 100) * 180; // Map 0–100% to 0–180 degrees
-      document.getElementById("progressArc").style.transform = `rotate(${angle}deg)`;
-      document.getElementById("progressLabel").innerText = `${percent}%`;
-    }
-  
-    // Example usage:
-    setProgress(0); // Change this to set different percentages
-  </script> -->
+<script>
+  var maxValue = 100;
+  var minValue = 0;
 
+  function rotateWheel(value) {
+    if (value < minValue) value = minValue;
+    if (value > maxValue) value = maxValue;
+
+    var element = document.getElementById('progressWheelCircle');
+    var label = document.getElementById('progressWheelLabel');
+
+    // Map value from 0-100 to 180-360 degrees
+    var percentage = (value / maxValue) * 180 + 180;
+
+    element.style.transform = 'rotate(' + percentage + 'deg)';
+    label.innerText = value + '%';
+  }
+
+  // Example usage
+  rotateWheel(45);
+</script>
   {% endblock %}
